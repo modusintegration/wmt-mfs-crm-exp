@@ -1,0 +1,17 @@
+#%RAML 1.0 Library
+
+uses:
+  file-types: ../libraries/wmt_mfs_customer_common.raml
+  
+traits:
+  CommonHeader:
+    headers:
+      Accept-Encoding: file-types.Accept-Encoding
+      appId: file-types.ApplicationID
+      appVersion: file-types.ApplicationVersion
+      versionCode: file-types.VersionCode
+      deviceId: file-types.DeviceId
+      userLanguage: 
+        type: file-types.UserLanguage
+        required: false
+        

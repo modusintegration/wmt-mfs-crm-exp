@@ -1,0 +1,160 @@
+#%RAML 1.0 Library
+
+types: 
+
+# ********** Customer List Object **********
+  CustomerListObject:
+    type: object
+    properties: 
+     customers:
+      type: array
+      items: CustomerResponseMap
+
+# ********** Customer List Response Object ******
+  CustomerListResponseObject:
+    type: object
+    properties:
+      responseMap: CustomerListObject
+      message: Message
+      respTime: RespTime
+      statusCode: StatusCode
+
+# *********** Customer Response Map **********
+  CustomerResponseMap:
+    type: object
+    properties:
+      msisdn: Msisdn
+      name: Name
+      dob: DateInString
+      gender: Gender
+      kycLevel: KycLevel
+      identification: Identification
+      photo: Photo
+      country: Country
+      kycUpgradeApproved: KycUpgradeApproved
+
+# ********* Customer Response Object ********
+  CustomerResponseObject:
+    type: object
+    properties: 
+      responseMap: CustomerResponseMap
+      message: Message
+      respTime: RespTime
+      statusCode: StatusCode
+
+# ********** KycUpgradeApproved **************
+  KycUpgradeApproved:
+    type: boolean
+    required: false
+    description: "Whether KYC Upgrade is approved"
+
+# ******* Country  ***********       
+  Country:
+     type: string
+     required: false
+     description: "Country Code"
+
+# ******* Message  ***********       
+  Message:
+     type: string
+     required: false
+     description: "Optional message field"
+
+# ********* Identification ********
+  Identification:
+    type: object
+    properties:
+      prefix: string
+      townshipCode: string
+      citizenship: string
+      number: string
+      passportNumber: string
+      
+# ********* Photo ********
+  Photo:
+    type: object
+    properties:
+      front: string
+      back: string
+      profile: string
+      msisdn: Msisdn
+
+# ******* Msisdn ***********     
+  Msisdn:
+     type: string
+     description: "Msisdn"
+
+# ******* Name  ***********       
+  Name:
+     type: string
+     description: "Customer Name"
+
+# ********* Date in String  ************
+  DateInString:
+    type: string
+    description: "Date in String"
+
+# ******* Gender  ***********       
+  Gender:
+     type: string
+     enum: [male,female]
+     description: "Customer Gender"
+
+# ******* KYC Level ***********     
+  KycLevel:
+     type: number
+     required: false
+     description: "KYC Level"
+
+# ************ Common Response Object ********
+  CommonResponseObject:
+    type: object
+    properties:
+      responseMap:
+        type: object
+      message: Message
+      respTime: RespTime
+      statusCode: StatusCode
+
+# ******* Accept-Encoding ***********
+  Accept-Encoding:
+     type: string
+     description: "The accepted encoding."
+     required: true
+
+# ******* ApplicationID ***********
+  ApplicationID:
+     type: string 
+     description: "The application id (e.g., app package name in android)" 
+     required: true
+
+# ******* ApplicationVersion ***********
+  ApplicationVersion:
+     type: string 
+     description: "The application version" 
+     required: true
+
+# *******VersionCode ***********
+  VersionCode:
+     type: string 
+     description: "Version code"
+
+# ******* DeviceId ***********   
+  DeviceId:
+     type: string
+     description: "Device Id"
+
+# ******* UserLanguage ***********   
+  UserLanguage:
+     type: string
+     description: "User Language"
+
+# ******* RespTime ************
+  RespTime:
+    type: string
+    description: RespTime
+
+# ******* StatusCode ************
+  StatusCode:
+    type: string
+    description: StatusCode string

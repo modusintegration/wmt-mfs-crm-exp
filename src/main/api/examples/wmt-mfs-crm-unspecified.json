@@ -1,0 +1,10 @@
+{
+"status": {
+"code": 200,
+        "message": "OK"
+    },
+    "data": [ {
+            "message": "Details will be available later"
+        }
+]
+}

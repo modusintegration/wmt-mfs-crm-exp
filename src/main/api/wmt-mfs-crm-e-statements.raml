@@ -1,0 +1,37 @@
+post:
+  description: E-Statement
+  body: 
+    application/x-www-form-urlencoded:      
+      properties:
+        msisdn:
+          type: number
+          required: true
+          description: The MSISDN of the customer
+        date_range:
+          type: string
+          required: true
+          description: 1 Month / 2 Month / 3 Month
+        email:
+          type: string
+          required: true
+          description: This is email id of customer. You need to update email id if email id is different.
+        verification1:
+          type: string
+          required: true
+          description: This answer is checked for the 1st verification
+        verification2:
+          type: string
+          required: true
+          description: This answer is checked for the 2nd verification
+        verification3:
+          type: string
+          required: true
+          description: This answer is checked for the 3rd verification
+  responses: 
+    200:
+      description: On Successful response.  
+      body: 
+        application/json:
+          example: !include         examples/wmt-mfs-crm-unspecified.json
+    304:
+      description: On unchanged response.

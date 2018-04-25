@@ -1,0 +1,24 @@
+{
+"status": {
+        "code": 200,
+        "message": "OK"
+    },
+        "data": [ 
+          {
+            "customer_name": "Swe Swe Thu",
+            "customer_msisdn": "9999XXXXXX",
+            "date_of_activation": "25 Jan, 2017",
+            "wave_ac_balance": "5500",
+            "to_number": "5500",
+            "bank_name": "Yoma Bank",
+            "bank_ac_no": "31000025",
+            "bank_ac_balance": "4500",
+            "bank_ac_type": "Saving",
+            "nrc_number": "AAAA/1234/BBBB",
+            "parent_name": "N/A",
+            "mother_name": "N/A",
+            "pc_date_of_birth": "25 Jan, 2017",
+            "pos_wst_transaction_count": "305"
+        } 
+        ]
+}

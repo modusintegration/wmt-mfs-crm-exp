@@ -1,0 +1,31 @@
+#%RAML 1.0 Library
+
+traits:
+  CommonResponse:
+    responses:
+      200:
+        description: Valid
+      400:
+        description: Authentication unsuccessful; the credentials are not valid.
+      401:
+        description: Unauthenticated; maybe client didn't sent the access token.
+      402:
+        description: User is disabled.
+      403:
+        description: Forbidden; request cannot be processed without additional permissions.
+      404:
+        description: No such service.
+      409:
+        description: Security counter token value is unacceptable.
+      410:
+        description: Record not exist.
+      412:
+        description: Request parameters are not valid.
+      413:
+        description: File upload exceeds accepted length.
+      460:
+        description: Could not complete due to various reasons (insufficient funds, exceeded transactions...).
+      498:
+        description: Access token expired.
+      450:
+        description: Invalid fingerprint. The app has failed the fingerprint verification with server. Further requests will not be entertained.

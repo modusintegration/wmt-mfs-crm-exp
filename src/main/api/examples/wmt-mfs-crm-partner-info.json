@@ -1,0 +1,11 @@
+{
+"status": {
+"code": 200,
+        "message": "OK"
+    },
+"data": [ {
+            "partner_code": "MFPSMAMAND000416",
+            "parent_code": "301",
+            "partner_email": "demo@test.com"
+} ]
+}

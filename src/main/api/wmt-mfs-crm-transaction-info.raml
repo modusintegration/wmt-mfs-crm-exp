@@ -1,0 +1,19 @@
+get:
+  description: Find Transaction Information
+  queryParameters:
+        msisdn:
+          type: number
+          required: true
+          description: The MSISDN of the customer
+        limit:
+          type: number
+          required: true
+          description: The limit of record transactions in the descending order
+  responses: 
+    200:
+      description: On Successful response.  
+      body: 
+        application/json:
+          example: !include         examples/wmt-mfs-crm-transaction.json
+    304:
+      description: On unchanged response.

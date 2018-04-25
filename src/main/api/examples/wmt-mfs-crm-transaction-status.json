@@ -1,0 +1,42 @@
+{
+"status": {
+"code": 200,
+        "message": "OK"
+    },
+"data": [ {
+           "transaction_id": "332333",
+           "transaction_type": "500",
+           "transaction_date": "332333",
+           "transaction_amount": "500",
+           "transaction_fee": "332333",
+           "transaction_tax": "500",
+           "transaction_commission": "332333",
+           "pre_balance": "500",
+           "pro_balance": "332333",
+           "transaction_status": "500",
+           "transaction_reason": "332333",
+           "transaction_datetime": "500",
+           "error_description": "332333",
+           "result_code": "500",
+           "service_transactional_id": "332333",
+           "parent_transactional_id": "500",
+           "child_transactional_id": "500",
+           "recipient": "332333",
+           "sender_msisdn": "500",
+           "sender_poi": "500",
+           "receiver_msisdn": "332333",
+           "receiver_poi": "500",
+           "debit_amount": "332333",
+           "credit_amount": "500",
+           "creditor": "332333",
+           "debitor": "500",
+           "service_type": "332333",
+           "bonus": "500",
+           "fee_debitor": "332333",
+           "fee_fee": "500",
+           "fee_smfee": "332333",
+           "fee_tax": "500",
+           "child_transaction_ids":[{"transaction_id":"34444444"},{"transaction_id":"34444445"},{"transaction_id":"34444446"}]
+
+} ]
+}

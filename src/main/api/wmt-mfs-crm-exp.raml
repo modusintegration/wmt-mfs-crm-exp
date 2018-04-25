@@ -1,0 +1,30 @@
+#%RAML 1.0
+baseUri: https://mocksvc.mulesoft.com/mocks/ac58c223-7b6b-43a7-ac97-beb633affdbd/wmt-mfs-bop/ # baseUri: https://mocksvc.mulesoft.com/mocks/0529ccfb-d72c-4654-b66d-d9eeb189ee04/wmt-mfs-bop/ # baseUri: https://mocksvc.mulesoft.com/mocks/2530f3c9-0207-42f5-a805-28372f2e3a89/wmt-mfs-bop/ # baseUri: https://mocksvc.mulesoft.com/mocks/e057c828-8c03-41d6-a7f9-713d5d3bfc40/wmt-mfs-bop/ # baseUri: https://mocksvc.mulesoft.com/mocks/4ce85d07-af9b-46ad-a7a7-c488c7a1501b/wmt-mfs-bop/ # baseUri: https://mocksvc.mulesoft.com/mocks/9393a923-eaa9-4307-a434-56a6204f8058/wmt-mfs-bop/ # baseUri: https://mocksvc.mulesoft.com/mocks/aeeec235-1e33-4a2c-92a5-7e6527ba9deb/wmt-mfs-bop/ # baseUri: http://localhost:8082/wmt-mfs-bop/
+title: wmt-mfs-crm-exp
+version: 0.1
+
+mediaType: application/json
+description: bop DRAFT FOR INTERNAL REVIEW ONLY - Based on 6d_Telenor_MFS_API_V1.1.pdf
+
+uses:
+  file-types: libraries/wmt_mfs_customer_common.raml
+  file-headers: libraries/wmt_mfs_customer_common_headers.raml
+  file-responses: libraries/wmt_mfs_customer_common_responses.raml
+  
+
+/customer-info: !include wmt-mfs-crm-customer-info.raml
+/wave-acc-info: !include wmt-mfs-crm-wave-acc-info.raml
+/agent-hierarchy: !include wmt-mfs-crm-agent-hierarchy.raml
+/mapped-group: !include wmt-mfs-crm-mapped-group.raml
+/parter-info: !include wmt-mfs-crm-partner-info.raml
+/pos-address: !include wmt-mfs-crm-pos-address.raml
+/transaction-info: !include wmt-mfs-crm-transaction-info.raml
+/transaction-status: !include wmt-mfs-crm-transaction-status.raml
+/poi-limit: !include wmt-mfs-crm-poi-limit.raml
+/pin-reset: !include wmt-mfs-crm-pin-reset.raml
+/e-statements: !include wmt-mfs-crm-e-statements.raml
+/account-change-state: !include wmt-mfs-crm-account-change-state.raml
+/transaction-resend-sms: !include wmt-mfs-crm-transaction-resend-sms.raml
+/status-code-reset: !include wmt-mfs-crm-status-code-reset.raml
+/transaction-block: !include wmt-mfs-crm-transaction-block.raml
+/transaction-unblock: !include wmt-mfs-crm-transaction-unblock.raml

@@ -1,0 +1,14 @@
+{
+"status": {
+"code": 200,
+        "message": "OK"
+    },
+"data": [ {
+           "region": "N/A",
+           "city": "Mandalay",
+           "minicluster": "Mahaaungmyay2",
+           "territory": "Mandalay 2",
+           "cluster": "Mandalay 1",
+           "address": "81st42stx43st"
+} ]
+}

@@ -1,0 +1,13 @@
+{
+"status": {
+"code": 200,
+        "message": "OK"
+    },
+"data": [ {
+            "rg_lead": "Harsh Ahlawat (979100XXXX)",
+            "tsm": "Htet Paing Soe (979100XXXX)",
+            "dtr": "Lin Yaung Oo (979100XXXX)",
+            "cse": "Ko Thein Zaw Htun (979100XXXX)",
+            "pos": "Shwe Thi Mobile Two (979100XXXX)"
+} ]
+}

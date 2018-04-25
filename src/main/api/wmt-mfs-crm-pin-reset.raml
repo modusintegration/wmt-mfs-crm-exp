@@ -1,0 +1,33 @@
+post:
+  description: PIN Rest
+  body: 
+    application/x-www-form-urlencoded:      
+      properties:
+        msisdn:
+          type: number
+          required: true
+          description: The MSISDN of the customer
+        reason:
+          type: string
+          required: true
+          description: Customer reason
+        verification1:
+          type: string
+          required: true
+          description: This answer is checked for the 1st verification
+        verification2:
+          type: string
+          required: true
+          description: This answer is checked for the 2nd verification
+        verification3:
+          type: string
+          required: true
+          description: This answer is checked for the 3rd verification
+  responses: 
+    200:
+      description: On Successful response.  
+      body: 
+        application/json:
+          example: !include         examples/wmt-mfs-crm-pin-reset.json
+    304:
+      description: On unchanged response.

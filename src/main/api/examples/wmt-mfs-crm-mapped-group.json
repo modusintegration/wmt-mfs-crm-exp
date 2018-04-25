@@ -1,0 +1,11 @@
+{
+"status": {
+"code": 200,
+        "message": "OK"
+    },
+"data": [ {
+            "group_id": "10057",
+            "group_name": "POS Group",
+            "group_category": "POS"
+} ]
+}
