@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:metrics="http://www.mulesoft.org/schema/mule/metrics"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/metrics http://www.mulesoft.org/schema/mule/metrics/current/mule-metrics.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+
+	<spring:beans>
+
+		<spring:bean id="metricRegistry" scope="singleton"
+			class="com.codahale.metrics.MetricRegistry">
+		</spring:bean>
+
+		<spring:bean id="consoleReporter"
+			class="com.l1p.interop.mule.connector.metrics.spring.ReporterFactory"
+			factory-method="createConsoleReporter">
+			<spring:constructor-arg ref="metricRegistry" />
+		</spring:bean>
+
+		<spring:bean id="slf4jReporter"
+			class="com.l1p.interop.mule.connector.metrics.spring.ReporterFactory"
+			factory-method="createSlf4jReporter">
+			<spring:constructor-arg ref="metricRegistry" />
+		</spring:bean>
+
+		<spring:bean id="slf4jReporter-delta"
+			class="com.l1p.interop.mule.connector.metrics.spring.ReporterFactory"
+			factory-method="createSlf4jReporterWithDeltas">
+			<spring:constructor-arg ref="metricRegistry" />
+		</spring:bean>
+
+		<util:list id="scheduledReporters">
+<!-- 			<spring:ref bean="consoleReporter" /> -->
+			<spring:ref bean="slf4jReporter-delta" /> 
+		</util:list>
+
+	</spring:beans>
+
+	<metrics:config name="Metrics__Configuration"
+		metricRegistry-ref="metricRegistry" reporterInterval="30"
+		doc:name="Metrics: Metric Connector Configuration">
+		<metrics:scheduled-reporters ref="scheduledReporters" />
+	</metrics:config>
+
+	<http:request-config name="HTTP_Request_Configuration_for_PROC" 
+		host="${webserivce.proc.layer.host}" port="${webserivce.proc.layer.port}" 
+		basePath="${webserivce.proc.layer.path}" doc:name="HTTP Request Configuration" connectionIdleTimeout="60000" responseTimeout="1000000"/>
+
+	<context:property-placeholder ignore-resource-not-found="true" location="sftp.properties, esbdev_mule_1-${MULE_ENV}.properties, wmt-mfs-crm-exp.properties,wmt-mfs-crm-exp-override.properties, db-config.properties, firebase.properties"/>
+
+	<validation:config name="Validation_Configuration" doc:name="Validation Configuration"/>
+
+</mule>
