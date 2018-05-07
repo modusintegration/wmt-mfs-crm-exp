@@ -36,9 +36,9 @@ import com.wmt.mfs.crm.exp.exception.WaveMoneyJWTException;
 
 public class JwtUtil {
 
-	private static String publicKey = "src/main/resources/mfsKeystore.jks";
-//	 private static String publicKey =
-//	 "/opt/mule-enterprise-standalone-3.9.0/apps/wmt-mfs-crm-exp/classes/mfsKeystore.jks";
+//	private static String publicKey = "src/main/resources/mfsKeystore.jks";
+	 private static String publicKey =
+	 "/opt/mule-enterprise-standalone-3.9.0/apps/wmt-mfs-crm-exp/classes/mfsKeystore.jks";
 	private static Logger logger = LogManager.getLogger(JwtUtil.class.getName());
 
 	/**
