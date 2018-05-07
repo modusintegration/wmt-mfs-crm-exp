@@ -1,7 +1,7 @@
 #%RAML 1.0 Library
 
 uses:
-  file-types: ../libraries/wmt_mfs_customer_common.raml
+  file-types: ../libraries/wmt_mfs_crm_common.raml
   
 traits:
   CommonHeader:
@@ -14,4 +14,9 @@ traits:
       userLanguage: 
         type: file-types.UserLanguage
         required: false
-        
+  LoginHeader:
+    headers:
+      Accept-Encoding: file-types.Accept-Encoding
+      userLanguage: 
+        type: file-types.UserLanguage
+        required: false

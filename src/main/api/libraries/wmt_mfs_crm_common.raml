@@ -46,19 +46,19 @@ types:
   KycUpgradeApproved:
     type: boolean
     required: false
-    description: "Whether KYC Upgrade is approved"
+    description: Whether KYC Upgrade is approved
 
 # ******* Country  ***********       
   Country:
      type: string
      required: false
-     description: "Country Code"
+     description: Country Code
 
 # ******* Message  ***********       
   Message:
      type: string
      required: false
-     description: "Optional message field"
+     description: Optional message field
 
 # ********* Identification ********
   Identification:
@@ -82,29 +82,29 @@ types:
 # ******* Msisdn ***********     
   Msisdn:
      type: string
-     description: "Msisdn"
+     description: Msisdn
 
 # ******* Name  ***********       
   Name:
      type: string
-     description: "Customer Name"
+     description: Customer Name
 
 # ********* Date in String  ************
   DateInString:
     type: string
-    description: "Date in String"
+    description: Date in String
 
 # ******* Gender  ***********       
   Gender:
      type: string
      enum: [male,female]
-     description: "Customer Gender"
+     description: Customer Gender
 
 # ******* KYC Level ***********     
   KycLevel:
      type: number
      required: false
-     description: "KYC Level"
+     description: KYC Level
 
 # ************ Common Response Object ********
   CommonResponseObject:
@@ -119,35 +119,35 @@ types:
 # ******* Accept-Encoding ***********
   Accept-Encoding:
      type: string
-     description: "The accepted encoding."
+     description: The accepted encoding.
      required: true
 
 # ******* ApplicationID ***********
   ApplicationID:
      type: string 
-     description: "The application id (e.g., app package name in android)" 
+     description: The application id (e.g., app package name in android) 
      required: true
 
 # ******* ApplicationVersion ***********
   ApplicationVersion:
      type: string 
-     description: "The application version" 
+     description: The application version 
      required: true
 
 # *******VersionCode ***********
   VersionCode:
      type: string 
-     description: "Version code"
+     description: Version code
 
 # ******* DeviceId ***********   
   DeviceId:
      type: string
-     description: "Device Id"
+     description: Device Id
 
 # ******* UserLanguage ***********   
   UserLanguage:
      type: string
-     description: "User Language"
+     description: User Language
 
 # ******* RespTime ************
   RespTime:
@@ -158,3 +158,53 @@ types:
   StatusCode:
     type: string
     description: StatusCode string
+# ******* UserType ***********    
+  UserType:
+     type: number
+     format: int32
+     minimum: 1
+     maximum: 2
+     description: "The type of the user values are
+     - Legal value of 1 for Agent
+     - Legal value of 2 for Retailer"
+# ******* Object Settings  ***********          
+  Settings:
+     type: object
+     description: (optional) the settings object. This specifies how the application should behave.
+     properties: 
+        fields_values: FieldValuesObject
+# ******* Object FieldValuesObject  ***********    
+  FieldValuesObject:
+     type: object
+     description: Contains following keys
+     properties: 
+        mfs.language:
+          type: array
+          items: MfsLanguage
+          uniqueItems: true
+        mfs.charge_type:
+          type: array
+          items: MfsChargeType
+          uniqueItems: true
+# ******* MfsLanguage ***********  
+  MfsLanguage:
+     type: string
+     description: MFS Language
+# ******* MfsChargeType ***********   
+  MfsChargeType:
+     type: string
+     description: MFS Charge Type
+# ================== Object Login  ==================
+  LoginResponseObject:
+   type: object
+   description: MFS Login Response
+   properties: 
+     responseMap: LoginResponseMap
+     message: Message
+  LoginResponseMap:
+   type: object
+   description: MFS Login Response
+   properties: 
+     userType: UserType
+     settings: Settings
+     msisdn: Msisdn

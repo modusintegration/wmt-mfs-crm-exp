@@ -89,6 +89,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <flow name="post:/transaction-unblock:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
         <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}" doc:name="Set Payload"/>
     </flow>
+    <flow name="post:/login:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+        <flow-ref name="wmt-mfs-post-login-main-flow" doc:name="wmt-mfs-post-login-main-flow" />
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" />
+    </flow>
     <apikit:mapping-exception-strategy name="wmt-mfs-crm-exp-apiKitGlobalExceptionMapping">
         <apikit:mapping statusCode="404">
             <apikit:exception value="org.mule.module.apikit.exception.NotFoundException" />
