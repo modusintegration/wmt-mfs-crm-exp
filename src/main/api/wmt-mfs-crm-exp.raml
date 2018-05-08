@@ -7,9 +7,9 @@ mediaType: application/json
 description: bop DRAFT FOR INTERNAL REVIEW ONLY - Based on 6d_Telenor_MFS_API_V1.1.pdf
 
 uses:
-  file-types: libraries/wmt_mfs_customer_common.raml
-  file-headers: libraries/wmt_mfs_customer_common_headers.raml
-  file-responses: libraries/wmt_mfs_customer_common_responses.raml
+  file-types: libraries/wmt_mfs_crm_common.raml
+  file-headers: libraries/wmt_mfs_crm_common_headers.raml
+  file-responses: libraries/wmt_mfs_crm_common_responses.raml
   
 
 /customer-info: !include wmt-mfs-crm-customer-info.raml
@@ -28,3 +28,4 @@ uses:
 /status-code-reset: !include wmt-mfs-crm-status-code-reset.raml
 /transaction-block: !include wmt-mfs-crm-transaction-block.raml
 /transaction-unblock: !include wmt-mfs-crm-transaction-unblock.raml
+/login: !include wmt-mfs-crm-login.raml
