@@ -9,7 +9,7 @@ http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/a
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
 
-    <api-platform-gw:api apiName="wmt-mfs-crm-exp" version="api-discovery" flowRef="wmt-mfs-crm-exp-main" create="true" apikitRef="wmt-mfs-crm-exp-config" doc:name="API Autodiscovery">
+    <api-platform-gw:api apiName="wmt-mfs-crm-exp" version="${mule.build.tag}" flowRef="wmt-mfs-crm-exp-main" create="true" apikitRef="wmt-mfs-crm-exp-config" doc:name="API Autodiscovery">
         <api-platform-gw:description>Configure api-discovery for wmt-mfs-customer-exp</api-platform-gw:description>
     </api-platform-gw:api>
 
