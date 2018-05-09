@@ -1,0 +1,22 @@
+
+post:
+  description: This API is used to login into Middleware
+  is: [file-headers.LoginHeader , file-responses.CommonResponse]
+  body: 
+    application/x-www-form-urlencoded:      
+      properties:
+        msisdn:
+          description: The partner ID (MSISDN)
+          type: string
+          required: true
+        password:
+          description: Partner PIN
+          type: string
+          required: true
+  responses: 
+    200:
+      description: Authentication successful; token generated in response content  
+      body: 
+        application/json:
+          type: file-types.LoginResponseObject
+          example: !include examples/wmt-crm-login-response.json

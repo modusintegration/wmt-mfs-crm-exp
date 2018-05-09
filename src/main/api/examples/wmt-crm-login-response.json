@@ -1,0 +1,19 @@
+{
+    "responseMap": {
+        "userType": 2,
+        "settings": {
+            "fields_values": {
+                "mfs.language": [
+                    "English",
+                    "Hindi"
+                ],
+                "mfs.charge_type": [
+                    "MFS",
+                    "CC"
+                ]
+            }
+        },
+        "msisdn": "9793162654"
+    },
+    "message": "Success"
+}
