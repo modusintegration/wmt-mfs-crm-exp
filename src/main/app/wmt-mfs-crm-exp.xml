@@ -14,8 +14,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </api-platform-gw:api>
 
     <apikit:config name="wmt-mfs-crm-exp-config" raml="wmt-mfs-crm-exp.raml" consoleEnabled="false" doc:name="Router"/>
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8085" doc:name="HTTP Listener Configuration"/>
     <flow name="wmt-mfs-crm-exp-main">
-        <http:listener config-ref="wmt-mfs-domain-httpListenerConfig" path="/v2/mfs-crm/*" doc:name="HTTP"/>
+        <http:listener config-ref="wmt-mfs-domain-httpListenerConfig" path="/v2/mfs-crm-customer-info/*" doc:name="HTTP"/>
         
         <logger level="INFO"
 			message="Received request at method=#[message.inboundProperties.'http.method'], url=http://#[message.inboundProperties.'host'+message.inboundProperties.'http.request.path'],  Content-Type=#[message.inboundProperties.'Content-Type'] Payload=#[message.payloadAs(java.lang.String)]"
@@ -29,17 +30,29 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <exception-strategy ref="wmt-mfs-crm-exp-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
     </flow>
     <flow name="wmt-mfs-crm-exp-console">
-        <http:listener config-ref="wmt-mfs-domain-httpListenerConfig" path="/v2/mfs-crm/console/*" doc:name="HTTP"/>
+        <http:listener config-ref="wmt-mfs-domain-httpListenerConfig" path="/v2/mfs-crm-customer-info/console/*" doc:name="HTTP"/>
         <apikit:console config-ref="wmt-mfs-crm-exp-config" doc:name="APIkit Console"/>
     </flow>
     <flow name="get:/agent-hierarchy:wmt-mfs-crm-exp-config">
         <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;            &quot;rg_lead&quot;: &quot;Harsh Ahlawat (979100XXXX)&quot;,&#xA;            &quot;tsm&quot;: &quot;Htet Paing Soe (979100XXXX)&quot;,&#xA;            &quot;dtr&quot;: &quot;Lin Yaung Oo (979100XXXX)&quot;,&#xA;            &quot;cse&quot;: &quot;Ko Thein Zaw Htun (979100XXXX)&quot;,&#xA;            &quot;pos&quot;: &quot;Shwe Thi Mobile Two (979100XXXX)&quot;&#xA;} ]&#xA;}" doc:name="Set Payload"/>
     </flow>
-    <flow name="get:/customer-info:wmt-mfs-crm-exp-config">
-        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;        &quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;        &quot;data&quot;: [ &#xA;          {&#xA;            &quot;customer_name&quot;: &quot;Swe Swe Thu&quot;,&#xA;            &quot;customer_msisdn&quot;: &quot;9999XXXXXX&quot;,&#xA;            &quot;date_of_activation&quot;: &quot;25 Jan, 2017&quot;,&#xA;            &quot;wave_ac_balance&quot;: &quot;5500&quot;,&#xA;            &quot;to_number&quot;: &quot;5500&quot;,&#xA;            &quot;bank_name&quot;: &quot;Yoma Bank&quot;,&#xA;            &quot;bank_ac_no&quot;: &quot;31000025&quot;,&#xA;            &quot;bank_ac_balance&quot;: &quot;4500&quot;,&#xA;            &quot;bank_ac_type&quot;: &quot;Saving&quot;,&#xA;            &quot;nrc_number&quot;: &quot;AAAA/1234/BBBB&quot;,&#xA;            &quot;parent_name&quot;: &quot;N/A&quot;,&#xA;            &quot;mother_name&quot;: &quot;N/A&quot;,&#xA;            &quot;pc_date_of_birth&quot;: &quot;25 Jan, 2017&quot;,&#xA;            &quot;pos_wst_transaction_count&quot;: &quot;305&quot;&#xA;        } &#xA;        ]&#xA;}" doc:name="Set Payload"/>
+     <flow name="get:/customer-info:wmt-mfs-crm-exp-config">
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+        <flow-ref name="wmt-mfs-get-customer-info-main-flow" doc:name="wmt-mfs-get-customer-info-main-flow" />
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" />
     </flow>
     <flow name="get:/mapped-group:wmt-mfs-crm-exp-config">
-        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;            &quot;group_id&quot;: &quot;10057&quot;,&#xA;            &quot;group_name&quot;: &quot;POS Group&quot;,&#xA;            &quot;group_category&quot;: &quot;POS&quot;&#xA;} ]&#xA;}" doc:name="Set Payload"/>
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+        <flow-ref name="wmt-mfs-get-mapped-group-main-flow" doc:name="wmt-mfs-get-mapped-group-main-flow" />
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
+    </flow>
+  <flow name="get:/transaction-info:wmt-mfs-crm-exp-config">
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+        <flow-ref name="wmt-mfs-get-transaction-info-main-flow" doc:name="wmt-mfs-get-mapped-group-main-flow" />
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
     </flow>
     <flow name="get:/parter-info:wmt-mfs-crm-exp-config">
         <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;            &quot;partner_code&quot;: &quot;MFPSMAMAND000416&quot;,&#xA;            &quot;parent_code&quot;: &quot;301&quot;,&#xA;            &quot;partner_email&quot;: &quot;demo@test.com&quot;&#xA;} ]&#xA;}" doc:name="Set Payload"/>
@@ -49,9 +62,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </flow>
     <flow name="get:/pos-address:wmt-mfs-crm-exp-config">
         <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;           &quot;region&quot;: &quot;N/A&quot;,&#xA;           &quot;city&quot;: &quot;Mandalay&quot;,&#xA;           &quot;minicluster&quot;: &quot;Mahaaungmyay2&quot;,&#xA;           &quot;territory&quot;: &quot;Mandalay 2&quot;,&#xA;           &quot;cluster&quot;: &quot;Mandalay 1&quot;,&#xA;           &quot;address&quot;: &quot;81st42stx43st&quot;&#xA;} ]&#xA;}" doc:name="Set Payload"/>
-    </flow>
-    <flow name="get:/transaction-info:wmt-mfs-crm-exp-config">
-        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;           &quot;id&quot;: &quot;332333&quot;,&#xA;           &quot;amount&quot;: &quot;500&quot;&#xA;        },&#xA;        {&#xA;           &quot;id&quot;: &quot;332334&quot;,&#xA;           &quot;amount&quot;: &quot;500&quot;&#xA;        }, {&#xA;           &quot;id&quot;: &quot;332335&quot;,&#xA;           &quot;amount&quot;: &quot;500&quot;&#xA;        }]&#xA; &#xA;}" doc:name="Set Payload"/>
     </flow>
     <flow name="get:/transaction-status:wmt-mfs-crm-exp-config">
         <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;           &quot;transaction_id&quot;: &quot;332333&quot;,&#xA;           &quot;transaction_type&quot;: &quot;500&quot;,&#xA;           &quot;transaction_date&quot;: &quot;332333&quot;,&#xA;           &quot;transaction_amount&quot;: &quot;500&quot;,&#xA;           &quot;transaction_fee&quot;: &quot;332333&quot;,&#xA;           &quot;transaction_tax&quot;: &quot;500&quot;,&#xA;           &quot;transaction_commission&quot;: &quot;332333&quot;,&#xA;           &quot;pre_balance&quot;: &quot;500&quot;,&#xA;           &quot;pro_balance&quot;: &quot;332333&quot;,&#xA;           &quot;transaction_status&quot;: &quot;500&quot;,&#xA;           &quot;transaction_reason&quot;: &quot;332333&quot;,&#xA;           &quot;transaction_datetime&quot;: &quot;500&quot;,&#xA;           &quot;error_description&quot;: &quot;332333&quot;,&#xA;           &quot;result_code&quot;: &quot;500&quot;,&#xA;           &quot;service_transactional_id&quot;: &quot;332333&quot;,&#xA;           &quot;parent_transactional_id&quot;: &quot;500&quot;,&#xA;           &quot;child_transactional_id&quot;: &quot;500&quot;,&#xA;           &quot;recipient&quot;: &quot;332333&quot;,&#xA;           &quot;sender_msisdn&quot;: &quot;500&quot;,&#xA;           &quot;sender_poi&quot;: &quot;500&quot;,&#xA;           &quot;receiver_msisdn&quot;: &quot;332333&quot;,&#xA;           &quot;receiver_poi&quot;: &quot;500&quot;,&#xA;           &quot;debit_amount&quot;: &quot;332333&quot;,&#xA;           &quot;credit_amount&quot;: &quot;500&quot;,&#xA;           &quot;creditor&quot;: &quot;332333&quot;,&#xA;           &quot;debitor&quot;: &quot;500&quot;,&#xA;           &quot;service_type&quot;: &quot;332333&quot;,&#xA;           &quot;bonus&quot;: &quot;500&quot;,&#xA;           &quot;fee_debitor&quot;: &quot;332333&quot;,&#xA;           &quot;fee_fee&quot;: &quot;500&quot;,&#xA;           &quot;fee_smfee&quot;: &quot;332333&quot;,&#xA;           &quot;fee_tax&quot;: &quot;500&quot;,&#xA;           &quot;child_transaction_ids&quot;:[{&quot;transaction_id&quot;:&quot;34444444&quot;},{&quot;transaction_id&quot;:&quot;34444445&quot;},{&quot;transaction_id&quot;:&quot;34444446&quot;}]&#xA;&#xA;} ]&#xA;}" doc:name="Set Payload"/>
