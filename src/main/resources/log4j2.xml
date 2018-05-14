@@ -16,6 +16,12 @@
             <SizeBasedTriggeringPolicy size="10 MB" />
             <DefaultRolloverStrategy max="10"/>
         </RollingFile>
+        <RollingFile name="metrics" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}metrics-wmt-mfs-crm-exp.log"
+                filePattern="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}metrics-wmt-mfs-crm-exp-%i.log">
+           <PatternLayout pattern="%d [%t] %-5p %c - %m%n" />
+           <SizeBasedTriggeringPolicy size="10 MB" />
+           <DefaultRolloverStrategy max="10"/>
+       </RollingFile>
         <Console name="console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d [%t] %-5p %c - %m%n" />
         </Console> 
@@ -46,8 +52,16 @@
         <AsyncLogger name="org.jetel" level="WARN"/>
         <AsyncLogger name="Tracking" level="WARN"/>
         
+        <AsyncLogger name="metrics" level="DEBUG">
+        	<AppenderRef ref="metrics" />
+      		<AppenderRef ref="console" />
+        </AsyncLogger>
+        
+        <AsyncLogger name="com.wmt.*" level="DEBUG"/>                
+        
         <AsyncRoot level="INFO">
-            <AppenderRef ref="file" />
+            <AppenderRef ref="file"/>
+            <AppenderRef ref="console"/>
         </AsyncRoot>
     </Loggers>
 </Configuration>
