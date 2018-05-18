@@ -33,9 +33,14 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <http:listener config-ref="wmt-mfs-domain-httpListenerConfig" path="/v2/mfs-crm-customer-info/console/*" doc:name="HTTP"/>
         <apikit:console config-ref="wmt-mfs-crm-exp-config" doc:name="APIkit Console"/>
     </flow>
-    <flow name="get:/agent-hierarchy:wmt-mfs-crm-exp-config">
-        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;            &quot;rg_lead&quot;: &quot;Harsh Ahlawat (979100XXXX)&quot;,&#xA;            &quot;tsm&quot;: &quot;Htet Paing Soe (979100XXXX)&quot;,&#xA;            &quot;dtr&quot;: &quot;Lin Yaung Oo (979100XXXX)&quot;,&#xA;            &quot;cse&quot;: &quot;Ko Thein Zaw Htun (979100XXXX)&quot;,&#xA;            &quot;pos&quot;: &quot;Shwe Thi Mobile Two (979100XXXX)&quot;&#xA;} ]&#xA;}" doc:name="Set Payload"/>
+    
+     <flow name="get:/agent-hierarchy:wmt-mfs-crm-exp-config">
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+        <flow-ref name="wmt-mfs-get-agent-hierarchy-main-flow" doc:name="wmt-mfs-get-mapped-group-main-flow" />
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
     </flow>
+    
      <flow name="get:/customer-info:wmt-mfs-crm-exp-config">
         <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
         <flow-ref name="wmt-mfs-get-customer-info-main-flow" doc:name="wmt-mfs-get-customer-info-main-flow" />
