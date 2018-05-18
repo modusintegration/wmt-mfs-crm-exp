@@ -165,7 +165,8 @@ public class JwtUtil {
 		claims.setIssuer("WM"); // who creates the token and signs it
 		claims.setAudience("WMT-MFS"); // to whom the token is intended to be
 										// sent
-		claims.setExpirationTimeMinutesInTheFuture(10); // time when the token
+		//CRM will not have an expiration time for the JWT
+		//claims.setExpirationTimeMinutesInTheFuture(10); // time when the token
 														// will expire (10
 														// minutes from now)
 		claims.setGeneratedJwtId(); // a unique identifier for the token
@@ -176,11 +177,10 @@ public class JwtUtil {
 		claims.setSubject("WMT-MFS"); // the subject/principal is whom the token
 										// is about
 
-		String uuidJti = UUID.randomUUID().toString();
-
-		logger.info("uuidJti: " + uuidJti);
-
-		claims.setJwtId(uuidJti);
+		//CRM will not have a NONCE set to its JWTID
+		//String uuidJti = UUID.randomUUID().toString();
+		//logger.info("uuidJti: " + uuidJti);
+		//claims.setJwtId(uuidJti);
 
 //		try {
 //			logger.info("expirationTime: " + claims.getExpirationTime());
@@ -281,17 +281,18 @@ public class JwtUtil {
 			// a trusted issuer, and
 			// and audience that identifies your system as the intended
 			// recipient.
-			JwtConsumer jwtConsumer = new JwtConsumerBuilder().setRequireExpirationTime() // the
-																							// JWT
-																							// must
-																							// have
-																							// an
-																							// expiration
-																							// time
-					.setAllowedClockSkewInSeconds(30) // allow some leeway in
-														// validating time based
-														// claims to account for
-														// clock skew
+			//CRM will not verify the JWT has expiration time set
+			//.setRequireExpirationTime() // the
+			// JWT
+			// must
+			// have
+			// an
+			// expiration
+			// time
+			JwtConsumer jwtConsumer = new JwtConsumerBuilder().setAllowedClockSkewInSeconds(30) // allow some leeway in
+														                                        // validating time based
+														                                        // claims to account for
+														                                        // clock skew
 					.setRequireSubject() // the JWT must have a subject claim
 					.setExpectedIssuer("WM") // whom the JWT needs to have been
 												// issued by
@@ -419,17 +420,18 @@ public class JwtUtil {
 			// a trusted issuer, and
 			// and audience that identifies your system as the intended
 			// recipient.
-			JwtConsumer jwtConsumer = new JwtConsumerBuilder().setRequireExpirationTime() // the
-																							// JWT
-																							// must
-																							// have
-																							// an
-																							// expiration
-																							// time
-					.setAllowedClockSkewInSeconds(30) // allow some leeway in
-														// validating time based
-														// claims to account for
-														// clock skew
+			//CRM will not verify if JWT has expiration time configured
+			//.setRequireExpirationTime() // the
+			// JWT
+			// must
+			// have
+			// an
+			// expiration
+			// time
+			JwtConsumer jwtConsumer = new JwtConsumerBuilder().setAllowedClockSkewInSeconds(30) // allow some leeway in
+														                                        // validating time based
+														                                        // claims to account for
+														                                        // clock skew
 					.setRequireSubject() // the JWT must have a subject claim
 					.setExpectedIssuer("WM") // whom the JWT needs to have been
 												// issued by
@@ -475,7 +477,7 @@ public class JwtUtil {
 				
 				if (true) {
 					
-					logger.info("Jwe: Nonce has been deleted");
+					//logger.info("Jwe: Nonce has been deleted");
 					
 					logger.debug("JWE-JWS-JWT validation succeeded! " + jwtClaims);
 					
@@ -570,14 +572,15 @@ public class JwtUtil {
 			// a trusted issuer, and
 			// and audience that identifies your system as the intended
 			// recipient.
-			JwtConsumer jwtConsumer = new JwtConsumerBuilder().setRequireExpirationTime() // the
-																							// JWT
-																							// must
-																							// have
-																							// an
-																							// expiration
-																							// time
-					.setAllowedClockSkewInSeconds(30) // allow some leeway in
+			// CRM will not validate if expiration time has been set 
+			//.setRequireExpirationTime() // the
+			// JWT
+			// must
+			// have
+			// an
+			// expiration
+			// time
+			JwtConsumer jwtConsumer = new JwtConsumerBuilder().setAllowedClockSkewInSeconds(30) // allow some leeway in
 														// validating time based
 														// claims to account for
 														// clock skew

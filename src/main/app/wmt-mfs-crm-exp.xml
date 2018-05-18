@@ -15,7 +15,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
     <apikit:config name="wmt-mfs-crm-exp-config" raml="wmt-mfs-crm-exp.raml" consoleEnabled="false" doc:name="Router"/>
     <flow name="wmt-mfs-crm-exp-main">
-        <http:listener config-ref="wmt-mfs-domain-httpListenerConfig" path="/v2/mfs-crm/*" doc:name="HTTP"/>
+        <http:listener config-ref="wmt-mfs-domain-httpListenerConfig" path="/mfs-crm/*" doc:name="HTTP"/>
         
         <logger level="INFO"
 			message="Received request at method=#[message.inboundProperties.'http.method'], url=http://#[message.inboundProperties.'host'+message.inboundProperties.'http.request.path'],  Content-Type=#[message.inboundProperties.'Content-Type'] Payload=#[message.payloadAs(java.lang.String)]"
@@ -29,7 +29,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <exception-strategy ref="wmt-mfs-crm-exp-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
     </flow>
     <flow name="wmt-mfs-crm-exp-console">
-        <http:listener config-ref="wmt-mfs-domain-httpListenerConfig" path="/v2/mfs-crm/console/*" doc:name="HTTP"/>
+        <http:listener config-ref="wmt-mfs-domain-httpListenerConfig" path="/mfs-crm/console/*" doc:name="HTTP"/>
         <apikit:console config-ref="wmt-mfs-crm-exp-config" doc:name="APIkit Console"/>
     </flow>
     <flow name="get:/agent-hierarchy:wmt-mfs-crm-exp-config">
