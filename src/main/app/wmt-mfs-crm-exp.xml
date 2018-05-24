@@ -9,14 +9,13 @@ http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/a
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
 
-    <api-platform-gw:api apiName="wmt-mfs-crm-exp" version="api-discovery" flowRef="wmt-mfs-crm-exp-main" create="true" apikitRef="wmt-mfs-crm-exp-config" doc:name="API Autodiscovery">
+    <api-platform-gw:api apiName="wmt-mfs-crm-exp" version="${mule.build.tag}" flowRef="wmt-mfs-crm-exp-main" create="true" apikitRef="wmt-mfs-crm-exp-config" doc:name="API Autodiscovery">
         <api-platform-gw:description>Configure api-discovery for wmt-mfs-customer-exp</api-platform-gw:description>
     </api-platform-gw:api>
 
     <apikit:config name="wmt-mfs-crm-exp-config" raml="wmt-mfs-crm-exp.raml" consoleEnabled="false" doc:name="Router"/>
-    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8085" doc:name="HTTP Listener Configuration"/>
-    <flow name="wmt-mfs-crm-exp-main">
-        <http:listener config-ref="wmt-mfs-domain-httpListenerConfig" path="/v2/mfs-crm-customer-info/*" doc:name="HTTP"/>
+       <flow name="wmt-mfs-crm-exp-main">
+<http:listener config-ref="HTTP_Listener_ConfigurationTemp" path="/mfs-crm/*" doc:name="HTTP"/>
         
         <logger level="INFO"
 			message="Received request at method=#[message.inboundProperties.'http.method'], url=http://#[message.inboundProperties.'host'+message.inboundProperties.'http.request.path'],  Content-Type=#[message.inboundProperties.'Content-Type'] Payload=#[message.payloadAs(java.lang.String)]"
@@ -30,13 +29,13 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <exception-strategy ref="wmt-mfs-crm-exp-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
     </flow>
     <flow name="wmt-mfs-crm-exp-console">
-        <http:listener config-ref="wmt-mfs-domain-httpListenerConfig" path="/v2/mfs-crm-customer-info/console/*" doc:name="HTTP"/>
-        <apikit:console config-ref="wmt-mfs-crm-exp-config" doc:name="APIkit Console"/>
+  		<http:listener config-ref="HTTP_Listener_ConfigurationTemp" path="/mfs-crm/console/*" doc:name="HTTP"/>
+         <apikit:console config-ref="wmt-mfs-crm-exp-config" doc:name="APIkit Console"/>
     </flow>
     
      <flow name="get:/agent-hierarchy:wmt-mfs-crm-exp-config">
         <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        <flow-ref name="wmt-mfs-get-agent-hierarchy-main-flow" doc:name="wmt-mfs-get-mapped-group-main-flow" />
+        <flow-ref name="wmt-mfs-get-agent-hierarchy-main-flow" doc:name="wmt-mfs-get-agent-hierarchy-main-flow" />
         <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
         <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
     </flow>
@@ -55,7 +54,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </flow>
    <flow name="get:/transaction-info:wmt-mfs-crm-exp-config">
         <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        <flow-ref name="wmt-mfs-get-transaction-info-main-flow" doc:name="wmt-mfs-get-mapped-group-main-flow" />
+        <flow-ref name="wmt-mfs-get-transaction-info-main-flow" doc:name="wmt-mfs-get-transaction-info-main-flow" />
         <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
         <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
     </flow>
@@ -64,19 +63,22 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </flow>
       <flow name="get:/poi-limit:wmt-mfs-crm-exp-config">
         <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        <flow-ref name="wmt-mfs-get-poi-limit-main-flow" doc:name="wmt-mfs-get-mapped-group-main-flow" />
+        <flow-ref name="wmt-mfs-get-poi-limit-main-flow" doc:name="wmt-mfs-get-poi-limit-main-flow" />
         <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
         <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
     </flow>
     <flow name="get:/pos-address:wmt-mfs-crm-exp-config">
         <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;           &quot;region&quot;: &quot;N/A&quot;,&#xA;           &quot;city&quot;: &quot;Mandalay&quot;,&#xA;           &quot;minicluster&quot;: &quot;Mahaaungmyay2&quot;,&#xA;           &quot;territory&quot;: &quot;Mandalay 2&quot;,&#xA;           &quot;cluster&quot;: &quot;Mandalay 1&quot;,&#xA;           &quot;address&quot;: &quot;81st42stx43st&quot;&#xA;} ]&#xA;}" doc:name="Set Payload"/>
     </flow>
-    <flow name="get:/transaction-status:wmt-mfs-crm-exp-config">
-        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;           &quot;transaction_id&quot;: &quot;332333&quot;,&#xA;           &quot;transaction_type&quot;: &quot;500&quot;,&#xA;           &quot;transaction_date&quot;: &quot;332333&quot;,&#xA;           &quot;transaction_amount&quot;: &quot;500&quot;,&#xA;           &quot;transaction_fee&quot;: &quot;332333&quot;,&#xA;           &quot;transaction_tax&quot;: &quot;500&quot;,&#xA;           &quot;transaction_commission&quot;: &quot;332333&quot;,&#xA;           &quot;pre_balance&quot;: &quot;500&quot;,&#xA;           &quot;pro_balance&quot;: &quot;332333&quot;,&#xA;           &quot;transaction_status&quot;: &quot;500&quot;,&#xA;           &quot;transaction_reason&quot;: &quot;332333&quot;,&#xA;           &quot;transaction_datetime&quot;: &quot;500&quot;,&#xA;           &quot;error_description&quot;: &quot;332333&quot;,&#xA;           &quot;result_code&quot;: &quot;500&quot;,&#xA;           &quot;service_transactional_id&quot;: &quot;332333&quot;,&#xA;           &quot;parent_transactional_id&quot;: &quot;500&quot;,&#xA;           &quot;child_transactional_id&quot;: &quot;500&quot;,&#xA;           &quot;recipient&quot;: &quot;332333&quot;,&#xA;           &quot;sender_msisdn&quot;: &quot;500&quot;,&#xA;           &quot;sender_poi&quot;: &quot;500&quot;,&#xA;           &quot;receiver_msisdn&quot;: &quot;332333&quot;,&#xA;           &quot;receiver_poi&quot;: &quot;500&quot;,&#xA;           &quot;debit_amount&quot;: &quot;332333&quot;,&#xA;           &quot;credit_amount&quot;: &quot;500&quot;,&#xA;           &quot;creditor&quot;: &quot;332333&quot;,&#xA;           &quot;debitor&quot;: &quot;500&quot;,&#xA;           &quot;service_type&quot;: &quot;332333&quot;,&#xA;           &quot;bonus&quot;: &quot;500&quot;,&#xA;           &quot;fee_debitor&quot;: &quot;332333&quot;,&#xA;           &quot;fee_fee&quot;: &quot;500&quot;,&#xA;           &quot;fee_smfee&quot;: &quot;332333&quot;,&#xA;           &quot;fee_tax&quot;: &quot;500&quot;,&#xA;           &quot;child_transaction_ids&quot;:[{&quot;transaction_id&quot;:&quot;34444444&quot;},{&quot;transaction_id&quot;:&quot;34444445&quot;},{&quot;transaction_id&quot;:&quot;34444446&quot;}]&#xA;&#xA;} ]&#xA;}" doc:name="Set Payload"/>
+   <flow name="get:/transaction-status:wmt-mfs-crm-exp-config">
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+        <flow-ref name="wmt-mfs-get-transaction-status-main-flow" doc:name="wmt-mfs-get-transaction-status-main-flow" />
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
     </flow>
    <flow name="get:/wave-acc-info:wmt-mfs-crm-exp-config">
         <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        <flow-ref name="wmt-mfs-get-wave-acc-info-main-flow" doc:name="wmt-mfs-get-mapped-group-main-flow" />
+        <flow-ref name="wmt-mfs-get-wave-acc-info-main-flow" doc:name="wmt-mfs-get-wave-acc-info-flow" />
         <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
         <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
     </flow>

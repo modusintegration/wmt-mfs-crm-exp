@@ -16,7 +16,7 @@ public class DbUtil {
  	    Statement insertQuery = null;
  	      try {
  	         Class.forName("org.postgresql.Driver");
- 	         psqlConnection = DriverManager.getConnection("jdbc:postgresql://172.20.2.42:5432/SEC","secrw", "phpI8uGcPFXpG4B");
+ 	         psqlConnection = DriverManager.getConnection("jdbc:postgresql://172.21.2.10:5432/SEC","secrw", "phpI8uGcPFXpG4B");
  	         psqlConnection.setAutoCommit(true);
  	         
  	         insertQuery = psqlConnection.createStatement();
@@ -29,7 +29,6 @@ public class DbUtil {
  	         psqlConnection.close();
  	      } catch ( Exception e ) {
  	         System.err.println( e.getClass().getName()+": "+ e.getMessage() );
- 	         System.exit(0);
  	      }
 		
 	}
@@ -40,7 +39,7 @@ public class DbUtil {
  	    Statement deleteQuery = null;
  	      try {
  	         Class.forName("org.postgresql.Driver");
- 	         psqlConnection = DriverManager.getConnection("jdbc:postgresql://172.20.2.42:5432/SEC","secrw", "phpI8uGcPFXpG4B");
+ 	         psqlConnection = DriverManager.getConnection("jdbc:postgresql://172.21.2.10:5432/SEC","secrw", "phpI8uGcPFXpG4B");
  	         psqlConnection.setAutoCommit(true);
  	         
  	         deleteQuery = psqlConnection.createStatement();

@@ -11,32 +11,32 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
 
-    <flow name="wmt-mfs-get-wave-acc-info-main-flow">
+    <flow name="wmt-mfs-get-transaction-status-main-flow">
         <logger message="At login" level="INFO" doc:name="Logger" category="com.wmt.crm.exp.login"/>
-      <set-variable variableName="flowName"
-			value="wmt-mfs-get-wave-acc-info-main-flow" doc:name="Set Flow Name" />
+    <!--   <set-variable variableName="flowName"
+			value="wmt-mfs-get-transaction-status-main-flow" doc:name="Set Flow Name" />
 		<component class="com.wmt.mfs.crm.exp.JWTHeaderToProperties"
-			doc:name="JWTHeaderToProperties" /> 
-        <flow-ref name="wmt-mfs-get-wave-acc-info-request-flow" doc:name="wmt-mfs-get-wave-acc-info-request-flow"/>
+			doc:name="JWTHeaderToProperties" /> -->
+        <flow-ref name="wmt-mfs-get-transaction-status-request-flow" doc:name="wmt-mfs-get-transaction-status-request-flow"/>
         <logger message="Response: #[message.payloadAs(java.lang.String)]" level="DEBUG" category="com.wmt.crm.exp.login" doc:name="Logger"/>
   
     </flow>
     
-    <flow name="wmt-mfs-get-wave-acc-info-request-flow">
+    <flow name="wmt-mfs-get-transaction-status-request-flow">
     
-    	<http:request config-ref="HTTP_Request_Configuration_for_PROC" path="/wave-acc-info" method="GET" doc:name="HTTP">
+    	<http:request config-ref="HTTP_Request_Configuration_for_PROC" path="/transaction-status" method="GET" doc:name="HTTP">
             <http:request-builder>
-                <http:query-param paramName="msisdn" value="#[message.inboundProperties.'http.query.params'.msisdn]"/>
+                <http:query-param paramName="transaction_id" value="#[message.inboundProperties.'http.query.params'.transaction_id]"/>
             </http:request-builder>
             <http:success-status-code-validator values="200..299,400..499,500..599"/>
         </http:request>
           
-       <validation:is-true config-ref="Validation_Configuration"
+     <!--   <validation:is-true config-ref="Validation_Configuration"
 			message="Request Error" exceptionClass="com.wmt.mfs.crm.exp.exception.WaveMoneyHttpException"
 			expression="#[message.inboundProperties[&quot;http.status&quot;] == 200]"
 			doc:name="Validation" />
 		<component class="com.wmt.mfs.crm.exp.PropertiesToJWTHeader"
-			doc:name="PropertiesToJWTHeader" />
+			doc:name="PropertiesToJWTHeader" /> -->
         <exception-strategy ref="wmt-mfs-crm-global-exception-choice_exception_strategy" doc:name="Reference Exception Strategy"/>
     
     </flow>
