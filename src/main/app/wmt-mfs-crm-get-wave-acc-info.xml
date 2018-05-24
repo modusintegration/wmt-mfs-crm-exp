@@ -13,7 +13,7 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 
     <flow name="wmt-mfs-get-wave-acc-info-main-flow">
         <logger message="At login" level="INFO" doc:name="Logger" category="com.wmt.crm.exp.login"/>
-      <set-variable variableName="flowName"
+       <set-variable variableName="flowName"
 			value="wmt-mfs-get-wave-acc-info-main-flow" doc:name="Set Flow Name" />
 		<component class="com.wmt.mfs.crm.exp.JWTHeaderToProperties"
 			doc:name="JWTHeaderToProperties" /> 
@@ -31,7 +31,7 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
             <http:success-status-code-validator values="200..299,400..499,500..599"/>
         </http:request>
           
-       <validation:is-true config-ref="Validation_Configuration"
+      <validation:is-true config-ref="Validation_Configuration"
 			message="Request Error" exceptionClass="com.wmt.mfs.crm.exp.exception.WaveMoneyHttpException"
 			expression="#[message.inboundProperties[&quot;http.status&quot;] == 200]"
 			doc:name="Validation" />
