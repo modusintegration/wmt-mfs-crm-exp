@@ -705,9 +705,7 @@ public class JwtUtil {
 			
 			KeyStore keystore = KeyStore.getInstance("JKS");
 
-			InputStream is = null;
-
-			is = new FileInputStream(filename);
+			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
 
 			keystore.load(is, password.toCharArray());
 			
@@ -756,9 +754,7 @@ public class JwtUtil {
 			
 			KeyStore keystore = KeyStore.getInstance("JKS");
 
-			InputStream is = null;
-
-			is = new FileInputStream(filename);
+			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
 
 			keystore.load(is, password.toCharArray());
 			
@@ -820,9 +816,7 @@ public class JwtUtil {
 			
 			KeyStore keystore = KeyStore.getInstance("JKS");
 
-			InputStream is = null;
-
-			is = new FileInputStream(filename);
+			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
 
 			keystore.load(is, password.toCharArray());
 			
