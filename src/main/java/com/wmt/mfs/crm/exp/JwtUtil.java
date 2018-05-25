@@ -223,6 +223,8 @@ public class JwtUtil {
 
 		logger.info("Clame has been converted to JSON");
 
+		Util u = new Util();
+		
 		// The JWT is signed using the private key
 		jws.setKey((RSAPrivateKey) getPrivateKey(publicKey, u.getProperty("jks.private.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.private.jwt.encrypt.alias", CRM_PROPERTIES)));
 
@@ -419,6 +421,8 @@ public class JwtUtil {
 			AlgorithmConstraints jweEncConstraints = new AlgorithmConstraints(ConstraintType.WHITELIST,
 					ContentEncryptionAlgorithmIdentifiers.AES_128_CBC_HMAC_SHA_256);
 			
+			Util u = new Util();
+			
 			// Use JwtConsumerBuilder to construct an appropriate JwtConsumer,
 			// which will
 			// be used to validate and process the JWT.
@@ -569,6 +573,8 @@ public class JwtUtil {
 		JwtClaims jwtClaims = null;
 		
 		logger.info("*** Validating JWT And Return Claims ***");
+		
+		Util u = new Util();
 		
 		try {
 			// Use JwtConsumerBuilder to construct an appropriate JwtConsumer,
