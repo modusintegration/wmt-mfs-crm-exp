@@ -76,6 +76,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
         <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
     </flow>
+    <flow name="get:/child-transactions:wmt-mfs-crm-exp-config">
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+        <flow-ref name="wmt-mfs-get-child-transactions-main-flow" doc:name="wmt-mfs-get-child-transactions-main-flow" />
+        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
+    </flow>
    <flow name="get:/wave-acc-info:wmt-mfs-crm-exp-config">
         <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
         <flow-ref name="wmt-mfs-get-wave-acc-info-main-flow" doc:name="wmt-mfs-get-wave-acc-info-flow" />
