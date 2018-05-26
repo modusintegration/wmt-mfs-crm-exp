@@ -37,9 +37,13 @@ import com.wmt.mfs.crm.exp.exception.WaveMoneyJWTException;
 public class JwtUtil {
 
 //	private static String publicKey = "src/main/resources/mfsKeystore.jks";
-	 private static String publicKey =
-	 "/opt/mule-enterprise-standalone-3.9.0/apps/wmt-mfs-crm-exp/classes/mfsKeystore.jks";
+//	 private static String publicKey =
+//	 "/opt/mule-enterprise-standalone-3.9.0/apps/wmt-mfs-crm-exp/classes/mfsKeystore.jks";
+	 private static String publicKey = "mfsKeystore.jks";
 	private static Logger logger = LogManager.getLogger(JwtUtil.class.getName());
+	
+	public static final String CRM_PROPERTIES = "wmt-mfs-crm-exp.properties";
+	public static final String CRM_SEC_PROPERTIES = "wmt-mfs-crm-exp-sec.properties";
 
 	/**
 	 * @param args
@@ -115,8 +119,9 @@ public class JwtUtil {
 			String encAlg = ContentEncryptionAlgorithmIdentifiers.AES_128_CBC_HMAC_SHA_256;
 			jwe.setEncryptionMethodHeaderParameter(encAlg);
 
+			Util u = new Util();
 			// We encrypt to the receiver using their public key
-			jwe.setKey((RSAPublicKey) getPublicKey(publicKey, "password", "selfsigned"));
+			jwe.setKey((RSAPublicKey) getPublicKey(publicKey, u.getProperty("jks.public.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.public.jwt.encrypt.alias", CRM_PROPERTIES)));
 			jwe.setKeyIdHeaderValue("mfs");
 
 			// A nested JWT requires that the cty (Content Type) header be set
@@ -218,8 +223,10 @@ public class JwtUtil {
 
 		logger.info("Clame has been converted to JSON");
 
+		Util u = new Util();
+		
 		// The JWT is signed using the private key
-		jws.setKey((RSAPrivateKey) getPrivateKey(publicKey, "password", "selfsigned"));
+		jws.setKey((RSAPrivateKey) getPrivateKey(publicKey, u.getProperty("jks.private.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.private.jwt.encrypt.alias", CRM_PROPERTIES)));
 
 		// Set the Key ID (kid) header.
 		// We only have one key.
@@ -272,6 +279,9 @@ public class JwtUtil {
 
 			AlgorithmConstraints jweEncConstraints = new AlgorithmConstraints(ConstraintType.WHITELIST,
 					ContentEncryptionAlgorithmIdentifiers.AES_128_CBC_HMAC_SHA_256);
+			
+			Util u = new Util();
+			
 			// Use JwtConsumerBuilder to construct an appropriate JwtConsumer,
 			// which will
 			// be used to validate and process the JWT.
@@ -298,13 +308,13 @@ public class JwtUtil {
 												// issued by
 					.setExpectedAudience("WMT-MFS") // to whom the JWT is
 													// intended for
-					.setDecryptionKey((RSAPrivateKey) getPrivateKey(publicKey, "password", "selfsigned")) // decrypt
+					.setDecryptionKey((RSAPrivateKey) getPrivateKey(publicKey, u.getProperty("jks.private.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.private.jwt.encrypt.alias", CRM_PROPERTIES))) // decrypt
 																											// with
 																											// the
 																											// receiver's
 																											// private
 																											// key
-					.setVerificationKey((RSAPublicKey) getPublicKey(publicKey, "password", "selfsigned")) // verify
+					.setVerificationKey((RSAPublicKey) getPublicKey(publicKey, u.getProperty("jks.public.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.public.jwt.encrypt.alias", CRM_PROPERTIES))) // verify
 																											// the
 																											// signature
 																											// with
@@ -411,6 +421,8 @@ public class JwtUtil {
 			AlgorithmConstraints jweEncConstraints = new AlgorithmConstraints(ConstraintType.WHITELIST,
 					ContentEncryptionAlgorithmIdentifiers.AES_128_CBC_HMAC_SHA_256);
 			
+			Util u = new Util();
+			
 			// Use JwtConsumerBuilder to construct an appropriate JwtConsumer,
 			// which will
 			// be used to validate and process the JWT.
@@ -437,13 +449,13 @@ public class JwtUtil {
 												// issued by
 					.setExpectedAudience("WMT-MFS") // to whom the JWT is
 													// intended for
-					.setDecryptionKey((RSAPrivateKey) getPrivateKey(publicKey, "password", "selfsigned")) // decrypt
+					.setDecryptionKey((RSAPrivateKey) getPrivateKey(publicKey, u.getProperty("jks.private.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.private.jwt.encrypt.alias", CRM_PROPERTIES))) // decrypt
 																											// with
 																											// the
 																											// receiver's
 																											// private
 																											// key
-					.setVerificationKey((RSAPublicKey) getPublicKey(publicKey, "password", "selfsigned")) // verify
+					.setVerificationKey((RSAPublicKey) getPublicKey(publicKey, u.getProperty("jks.public.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.public.jwt.encrypt.alias", CRM_PROPERTIES))) // verify
 																											// the
 																											// signature
 																											// with
@@ -562,6 +574,8 @@ public class JwtUtil {
 		
 		logger.info("*** Validating JWT And Return Claims ***");
 		
+		Util u = new Util();
+		
 		try {
 			// Use JwtConsumerBuilder to construct an appropriate JwtConsumer,
 			// which will
@@ -589,7 +603,7 @@ public class JwtUtil {
 												// issued by
 					.setExpectedAudience("WMT-MFS") // to whom the JWT is
 													// intended for
-					.setVerificationKey((RSAPublicKey) getPublicKey(publicKey, "password", "selfsigned")) // verify
+					.setVerificationKey((RSAPublicKey) getPublicKey(publicKey, u.getProperty("jks.public.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.public.jwt.encrypt.alias", CRM_PROPERTIES))) // verify
 																											// the
 																											// signature
 																											// with
@@ -691,9 +705,7 @@ public class JwtUtil {
 			
 			KeyStore keystore = KeyStore.getInstance("JKS");
 
-			InputStream is = null;
-
-			is = new FileInputStream(filename);
+			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
 
 			keystore.load(is, password.toCharArray());
 			
@@ -742,9 +754,7 @@ public class JwtUtil {
 			
 			KeyStore keystore = KeyStore.getInstance("JKS");
 
-			InputStream is = null;
-
-			is = new FileInputStream(filename);
+			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
 
 			keystore.load(is, password.toCharArray());
 			
@@ -806,9 +816,7 @@ public class JwtUtil {
 			
 			KeyStore keystore = KeyStore.getInstance("JKS");
 
-			InputStream is = null;
-
-			is = new FileInputStream(filename);
+			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
 
 			keystore.load(is, password.toCharArray());
 			

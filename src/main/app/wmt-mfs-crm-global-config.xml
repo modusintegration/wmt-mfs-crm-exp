@@ -58,7 +58,7 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 		host="${webserivce.proc.layer.host}" port="${webserivce.proc.layer.port}" 
 		basePath="${webserivce.proc.layer.path}" doc:name="HTTP Request Configuration" connectionIdleTimeout="60000" responseTimeout="1000000"/>
 
-	<context:property-placeholder ignore-resource-not-found="true" location="wmt-mfs-crm-exp.properties,wmt-mfs-crm-exp-override.properties"/>
+	<context:property-placeholder ignore-resource-not-found="true" location="wmt-mfs-crm-exp.properties,wmt-mfs-crm-exp-sec.properties,wmt-mfs-crm-exp-override.properties,wmt-mfs-crm-exp-sec-override.properties"/>
 
 	<validation:config name="Validation_Configuration" doc:name="Validation Configuration"/>
 
