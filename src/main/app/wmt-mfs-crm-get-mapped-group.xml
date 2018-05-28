@@ -15,7 +15,7 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 		<logger message="At login" level="INFO" doc:name="Logger"
 			category="com.wmt.crm.exp.login" />
 		 <set-variable variableName="flowName"
-			value="wmt-mfs-get-customer-info-main-flow" doc:name="Set Flow Name" />
+			value="wmt-mfs-get-mapped-group-main-flow" doc:name="Set Flow Name" />
 		<component class="com.wmt.mfs.crm.exp.JWTHeaderToProperties"
 			doc:name="JWTHeaderToProperties" />
 		<flow-ref name="wmt-mfs-get-mapped-group-request-flow"
