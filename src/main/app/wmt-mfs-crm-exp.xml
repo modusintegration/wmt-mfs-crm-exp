@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:api-platform-gw="http://www.mulesoft.org/schema/mule/api-platform-gw"
-	xmlns:metrics="http://www.mulesoft.org/schema/mule/metrics"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/api-platform-gw http://www.mulesoft.org/schema/mule/api-platform-gw/current/mule-api-platform-gw.xsd
+	xmlns:metrics="http://www.mulesoft.org/schema/mule/metrics" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/api-platform-gw http://www.mulesoft.org/schema/mule/api-platform-gw/current/mule-api-platform-gw.xsd
 http://www.mulesoft.org/schema/mule/metrics http://www.mulesoft.org/schema/mule/metrics/current/mule-metrics.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
@@ -9,146 +12,262 @@ http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/a
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
 
-    <api-platform-gw:api apiName="wmt-mfs-crm-exp" version="${mule.build.tag}" flowRef="wmt-mfs-crm-exp-main" create="true" apikitRef="wmt-mfs-crm-exp-config" doc:name="API Autodiscovery">
-        <api-platform-gw:description>Configure api-discovery for wmt-mfs-customer-exp</api-platform-gw:description>
-    </api-platform-gw:api>
+	<api-platform-gw:api apiName="wmt-mfs-crm-exp"
+		version="${mule.build.tag}" flowRef="wmt-mfs-crm-exp-main" create="true"
+		apikitRef="wmt-mfs-crm-exp-config" doc:name="API Autodiscovery">
+		<api-platform-gw:description>Configure api-discovery for wmt-mfs-customer-exp</api-platform-gw:description>
+	</api-platform-gw:api>
 
-    <apikit:config name="wmt-mfs-crm-exp-config" raml="wmt-mfs-crm-exp.raml" consoleEnabled="false" doc:name="Router"/>
-       <flow name="wmt-mfs-crm-exp-main">
-<http:listener config-ref="HTTP_Listener_ConfigurationTemp" path="/mfs-crm/*" doc:name="HTTP"/>
-        
-        <logger level="INFO"
+	<apikit:config name="wmt-mfs-crm-exp-config" raml="wmt-mfs-crm-exp.raml"
+		consoleEnabled="false" doc:name="Router" />
+	<flow name="wmt-mfs-crm-exp-main">
+		<http:listener config-ref="wmt-mfs-domain-httpListenerConfig"
+			path="/mfs-crm/*" doc:name="HTTP" />
+
+		<logger level="INFO"
 			message="Received request at method=#[message.inboundProperties.'http.method'], url=http://#[message.inboundProperties.'host'+message.inboundProperties.'http.request.path'],  Content-Type=#[message.inboundProperties.'Content-Type'] Payload=#[message.payloadAs(java.lang.String)]"
 			category="com.wmt.mfs.crm.exp.main" doc:name="ReceivedRequest Logger" />
 		<logger message="Message: #[message]" level="INFO" doc:name="Message Logger"
 			category="com.wmt.mfs.crm.exp.main" />
 		<logger message="Payload: #[payload]" level="INFO" doc:name="Payload Logger"
-			category="com.wmt.mfs.crm.exp.main" />        
-        
-        <apikit:router config-ref="wmt-mfs-crm-exp-config" doc:name="APIkit Router"/>
-        <exception-strategy ref="wmt-mfs-crm-exp-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
-    </flow>
-    <flow name="wmt-mfs-crm-exp-console">
-  		<http:listener config-ref="HTTP_Listener_ConfigurationTemp" path="/mfs-crm/console/*" doc:name="HTTP"/>
-         <apikit:console config-ref="wmt-mfs-crm-exp-config" doc:name="APIkit Console"/>
-    </flow>
-    
-     <flow name="get:/agent-hierarchy:wmt-mfs-crm-exp-config">
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        <flow-ref name="wmt-mfs-get-agent-hierarchy-main-flow" doc:name="wmt-mfs-get-agent-hierarchy-main-flow" />
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
-        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
-    </flow>
-    
-     <flow name="get:/customer-info:wmt-mfs-crm-exp-config">
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        <flow-ref name="wmt-mfs-get-customer-info-main-flow" doc:name="wmt-mfs-get-customer-info-main-flow" />
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
-        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" />
-    </flow>
-    <flow name="get:/mapped-group:wmt-mfs-crm-exp-config">
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        <flow-ref name="wmt-mfs-get-mapped-group-main-flow" doc:name="wmt-mfs-get-mapped-group-main-flow" />
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
-        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
-    </flow>
-   <flow name="get:/transaction-info:wmt-mfs-crm-exp-config">
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        <flow-ref name="wmt-mfs-get-transaction-info-main-flow" doc:name="wmt-mfs-get-transaction-info-main-flow" />
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
-        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
-    </flow>
-    <flow name="get:/parter-info:wmt-mfs-crm-exp-config">
-        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;            &quot;partner_code&quot;: &quot;MFPSMAMAND000416&quot;,&#xA;            &quot;parent_code&quot;: &quot;301&quot;,&#xA;            &quot;partner_email&quot;: &quot;demo@test.com&quot;&#xA;} ]&#xA;}" doc:name="Set Payload"/>
-    </flow>
-      <flow name="get:/poi-limit:wmt-mfs-crm-exp-config">
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        <flow-ref name="wmt-mfs-get-poi-limit-main-flow" doc:name="wmt-mfs-get-poi-limit-main-flow" />
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
-        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
-    </flow>
-    <flow name="get:/pos-address:wmt-mfs-crm-exp-config">
-        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;           &quot;region&quot;: &quot;N/A&quot;,&#xA;           &quot;city&quot;: &quot;Mandalay&quot;,&#xA;           &quot;minicluster&quot;: &quot;Mahaaungmyay2&quot;,&#xA;           &quot;territory&quot;: &quot;Mandalay 2&quot;,&#xA;           &quot;cluster&quot;: &quot;Mandalay 1&quot;,&#xA;           &quot;address&quot;: &quot;81st42stx43st&quot;&#xA;} ]&#xA;}" doc:name="Set Payload"/>
-    </flow>
-   <flow name="get:/transaction-status:wmt-mfs-crm-exp-config">
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        <flow-ref name="wmt-mfs-get-transaction-status-main-flow" doc:name="wmt-mfs-get-transaction-status-main-flow" />
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
-        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
-    </flow>
-    <flow name="get:/child-transactions:wmt-mfs-crm-exp-config">
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        <flow-ref name="wmt-mfs-get-child-transactions-main-flow" doc:name="wmt-mfs-get-child-transactions-main-flow" />
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
-        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
-    </flow>
-   <flow name="get:/wave-acc-info:wmt-mfs-crm-exp-config">
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        <flow-ref name="wmt-mfs-get-wave-acc-info-main-flow" doc:name="wmt-mfs-get-wave-acc-info-flow" />
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
-        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" /> 
-    </flow>
-    <flow name="post:/account-change-state:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
-        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}" doc:name="Set Payload"/>
-    </flow>
-    <flow name="post:/e-statements:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
-        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}" doc:name="Set Payload"/>
-    </flow>
-    <flow name="post:/pin-reset:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
-       		<metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        	<!-- <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;            &quot;pin&quot;: &quot;123456&quot;&#xA;        }&#xA;]&#xA; }" doc:name="Set Payload"/> -->
-        	<flow-ref name="wmt-mfs-post-pin-reset-main-flow" doc:name="wmt-mfs-post-pin-reset-main-flow" />
-        	<metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
-			<metrics:time config-ref="Metrics__Configuration" 
+			category="com.wmt.mfs.crm.exp.main" />
+
+		<apikit:router config-ref="wmt-mfs-crm-exp-config"
+			doc:name="APIkit Router" />
+		<exception-strategy ref="wmt-mfs-crm-exp-apiKitGlobalExceptionMapping"
+			doc:name="Reference Exception Strategy" />
+	</flow>
+	<flow name="wmt-mfs-crm-exp-console">
+		<http:listener config-ref="wmt-mfs-domain-httpListenerConfig"
+			path="/mfs-crm/console/*" doc:name="HTTP" />
+		<apikit:console config-ref="wmt-mfs-crm-exp-config"
+			doc:name="APIkit Console" />
+	</flow>
+
+	<flow name="get:/agent-hierarchy:wmt-mfs-crm-exp-config">
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+		<flow-ref name="wmt-mfs-get-agent-hierarchy-main-flow"
+			doc:name="wmt-mfs-get-agent-hierarchy-main-flow" />
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+		<metrics:time config-ref="Metrics__Configuration"
 			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
 			endSnapKey="end_snap"
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
 			doc:name="Metrics Record Full Request" />
-        	
-    </flow>
-    <flow name="post:/status-code-reset:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
-        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}" doc:name="Set Payload"/>
-    </flow>
-    <flow name="post:/transaction-block:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
-        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}" doc:name="Set Payload"/>
-    </flow>
-    <flow name="post:/transaction-resend-sms:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
-        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}" doc:name="Set Payload"/>
-    </flow>
-    <flow name="post:/transaction-unblock:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
-        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}" doc:name="Set Payload"/>
-    </flow>
-    <flow name="post:/login:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-        <flow-ref name="wmt-mfs-post-login-main-flow" doc:name="wmt-mfs-post-login-main-flow" />
-        <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
-        <metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" />
-    </flow>
-    <apikit:mapping-exception-strategy name="wmt-mfs-crm-exp-apiKitGlobalExceptionMapping">
-        <apikit:mapping statusCode="404">
-            <apikit:exception value="org.mule.module.apikit.exception.NotFoundException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
-            <set-payload value="{ &quot;message&quot;: &quot;Resource not found&quot; }" doc:name="Set Payload"/>
-        </apikit:mapping>
-        <apikit:mapping statusCode="405">
-            <apikit:exception value="org.mule.module.apikit.exception.MethodNotAllowedException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
-            <set-payload value="{ &quot;message&quot;: &quot;Method not allowed&quot; }" doc:name="Set Payload"/>
-        </apikit:mapping>
-        <apikit:mapping statusCode="415">
-            <apikit:exception value="org.mule.module.apikit.exception.UnsupportedMediaTypeException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
-            <set-payload value="{ &quot;message&quot;: &quot;Unsupported media type&quot; }" doc:name="Set Payload"/>
-        </apikit:mapping>
-        <apikit:mapping statusCode="406">
-            <apikit:exception value="org.mule.module.apikit.exception.NotAcceptableException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
-            <set-payload value="{ &quot;message&quot;: &quot;Not acceptable&quot; }" doc:name="Set Payload"/>
-        </apikit:mapping>
-        <apikit:mapping statusCode="400">
-            <apikit:exception value="org.mule.module.apikit.exception.BadRequestException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
-            <set-payload value="{ &quot;message&quot;: &quot;Bad request&quot; }" doc:name="Set Payload"/>
-        </apikit:mapping>
-    </apikit:mapping-exception-strategy>
+	</flow>
+
+	<flow name="get:/customer-info:wmt-mfs-crm-exp-config">
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+		<flow-ref name="wmt-mfs-get-customer-info-main-flow"
+			doc:name="wmt-mfs-get-customer-info-main-flow" />
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+		<metrics:time config-ref="Metrics__Configuration"
+			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
+			endSnapKey="end_snap"
+			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
+			doc:name="Metrics Record Full Request" />
+	</flow>
+	<flow name="get:/mapped-group:wmt-mfs-crm-exp-config">
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+		<flow-ref name="wmt-mfs-get-mapped-group-main-flow" doc:name="wmt-mfs-get-mapped-group-main-flow" />
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+		<metrics:time config-ref="Metrics__Configuration"
+			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
+			endSnapKey="end_snap"
+			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
+			doc:name="Metrics Record Full Request" />
+	</flow>
+	<flow name="get:/transaction-info:wmt-mfs-crm-exp-config">
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+		<flow-ref name="wmt-mfs-get-transaction-info-main-flow"
+			doc:name="wmt-mfs-get-transaction-info-main-flow" />
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+		<metrics:time config-ref="Metrics__Configuration"
+			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
+			endSnapKey="end_snap"
+			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
+			doc:name="Metrics Record Full Request" />
+	</flow>
+	<flow name="get:/parter-info:wmt-mfs-crm-exp-config">
+		<set-payload
+			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;            &quot;partner_code&quot;: &quot;MFPSMAMAND000416&quot;,&#xA;            &quot;parent_code&quot;: &quot;301&quot;,&#xA;            &quot;partner_email&quot;: &quot;demo@test.com&quot;&#xA;} ]&#xA;}"
+			doc:name="Set Payload" />
+	</flow>
+	<flow name="get:/poi-limit:wmt-mfs-crm-exp-config">
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+		<flow-ref name="wmt-mfs-get-poi-limit-main-flow" doc:name="wmt-mfs-get-poi-limit-main-flow" />
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+		<metrics:time config-ref="Metrics__Configuration"
+			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
+			endSnapKey="end_snap"
+			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
+			doc:name="Metrics Record Full Request" />
+	</flow>
+	<flow name="get:/pos-address:wmt-mfs-crm-exp-config">
+		<set-payload
+			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;           &quot;region&quot;: &quot;N/A&quot;,&#xA;           &quot;city&quot;: &quot;Mandalay&quot;,&#xA;           &quot;minicluster&quot;: &quot;Mahaaungmyay2&quot;,&#xA;           &quot;territory&quot;: &quot;Mandalay 2&quot;,&#xA;           &quot;cluster&quot;: &quot;Mandalay 1&quot;,&#xA;           &quot;address&quot;: &quot;81st42stx43st&quot;&#xA;} ]&#xA;}"
+			doc:name="Set Payload" />
+	</flow>
+	<flow name="get:/transaction-status:wmt-mfs-crm-exp-config">
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+		<flow-ref name="wmt-mfs-get-transaction-status-main-flow"
+			doc:name="wmt-mfs-get-transaction-status-main-flow" />
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+		<metrics:time config-ref="Metrics__Configuration"
+			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
+			endSnapKey="end_snap"
+			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
+			doc:name="Metrics Record Full Request" />
+	</flow>
+	<flow name="get:/child-transactions:wmt-mfs-crm-exp-config">
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+		<flow-ref name="wmt-mfs-get-child-transactions-main-flow"
+			doc:name="wmt-mfs-get-child-transactions-main-flow" />
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+		<metrics:time config-ref="Metrics__Configuration"
+			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
+			endSnapKey="end_snap"
+			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
+			doc:name="Metrics Record Full Request" />
+	</flow>
+	<flow name="get:/wave-acc-info:wmt-mfs-crm-exp-config">
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+		<flow-ref name="wmt-mfs-get-wave-acc-info-main-flow"
+			doc:name="wmt-mfs-get-wave-acc-info-flow" />
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+		<metrics:time config-ref="Metrics__Configuration"
+			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
+			endSnapKey="end_snap"
+			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
+			doc:name="Metrics Record Full Request" />
+	</flow>
+	<flow
+		name="post:/account-change-state:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+		<set-payload
+			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}"
+			doc:name="Set Payload" />
+	</flow>
+	<flow
+		name="post:/e-statements:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+		<set-payload
+			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}"
+			doc:name="Set Payload" />
+	</flow>
+	<flow
+		name="post:/pin-reset:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+		<!-- <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 
+			200,&#xA; &quot;message&quot;: &quot;OK&quot;&#xA; },&#xA;&quot;data&quot;: 
+			[ {&#xA; &quot;pin&quot;: &quot;123456&quot;&#xA; }&#xA;]&#xA; }" doc:name="Set 
+			Payload"/> -->
+		<flow-ref name="wmt-mfs-post-pin-reset-main-flow" doc:name="wmt-mfs-post-pin-reset-main-flow" />
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+		<metrics:time config-ref="Metrics__Configuration"
+			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
+			endSnapKey="end_snap"
+			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
+			doc:name="Metrics Record Full Request" />
+
+	</flow>
+	<flow
+		name="post:/status-code-reset:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+		<set-payload
+			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}"
+			doc:name="Set Payload" />
+	</flow>
+	<flow
+		name="post:/transaction-block:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+		<set-payload
+			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}"
+			doc:name="Set Payload" />
+	</flow>
+	<flow
+		name="post:/transaction-resend-sms:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+		<set-payload
+			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}"
+			doc:name="Set Payload" />
+	</flow>
+	<flow
+		name="post:/transaction-unblock:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+		<set-payload
+			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}"
+			doc:name="Set Payload" />
+	</flow>
+	<flow
+		name="post:/login:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+		<flow-ref name="wmt-mfs-post-login-main-flow" doc:name="wmt-mfs-post-login-main-flow" />
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+		<metrics:time config-ref="Metrics__Configuration"
+			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
+			endSnapKey="end_snap"
+			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
+			doc:name="Metrics Record Full Request" />
+	</flow>
+	<apikit:mapping-exception-strategy
+		name="wmt-mfs-crm-exp-apiKitGlobalExceptionMapping">
+		<apikit:mapping statusCode="404">
+			<apikit:exception
+				value="org.mule.module.apikit.exception.NotFoundException" />
+			<set-property propertyName="Content-Type" value="application/json"
+				doc:name="Property" />
+			<set-payload
+				value="{ &quot;message&quot;: &quot;Resource not found&quot; }"
+				doc:name="Set Payload" />
+		</apikit:mapping>
+		<apikit:mapping statusCode="405">
+			<apikit:exception
+				value="org.mule.module.apikit.exception.MethodNotAllowedException" />
+			<set-property propertyName="Content-Type" value="application/json"
+				doc:name="Property" />
+			<set-payload
+				value="{ &quot;message&quot;: &quot;Method not allowed&quot; }"
+				doc:name="Set Payload" />
+		</apikit:mapping>
+		<apikit:mapping statusCode="415">
+			<apikit:exception
+				value="org.mule.module.apikit.exception.UnsupportedMediaTypeException" />
+			<set-property propertyName="Content-Type" value="application/json"
+				doc:name="Property" />
+			<set-payload
+				value="{ &quot;message&quot;: &quot;Unsupported media type&quot; }"
+				doc:name="Set Payload" />
+		</apikit:mapping>
+		<apikit:mapping statusCode="406">
+			<apikit:exception
+				value="org.mule.module.apikit.exception.NotAcceptableException" />
+			<set-property propertyName="Content-Type" value="application/json"
+				doc:name="Property" />
+			<set-payload value="{ &quot;message&quot;: &quot;Not acceptable&quot; }"
+				doc:name="Set Payload" />
+		</apikit:mapping>
+		<apikit:mapping statusCode="400">
+			<apikit:exception
+				value="org.mule.module.apikit.exception.BadRequestException" />
+			<set-property propertyName="Content-Type" value="application/json"
+				doc:name="Property" />
+			<set-payload value="{ &quot;message&quot;: &quot;Bad request&quot; }"
+				doc:name="Set Payload" />
+		</apikit:mapping>
+	</apikit:mapping-exception-strategy>
 </mule>
