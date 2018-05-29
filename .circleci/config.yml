@@ -1,0 +1,61 @@
+# Java Maven CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      - image: circleci/openjdk:8-jdk
+      
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    working_directory: ~/repo
+
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m
+    
+    steps:
+      - checkout
+      - setup_remote_docker
+      
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "pom.xml" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: mvn -s .circleci/settings.xml dependency:go-offline
+
+      - save_cache:
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2
+        
+      # run maven build and deploy artifact (no snapshots)
+      - run: 
+          name: remove snapshot version
+          command: |
+            if mvn -s .circleci/settings.xml -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec | grep -q "SNAPSHOT"; then mvn versions:set -DremoveSnapshot; fi;
+            echo $(mvn -s .circleci/settings.xml -q -Dexec.executable="echo" -Dexec.args='${wmt.mfs.domain.version}' --non-recursive exec:exec) > tempdomainvers.txt
+            echo $(mvn -s .circleci/settings.xml -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)-$(echo $CIRCLE_SHA1 | cut -c -7)-$CIRCLE_BUILD_NUM > tempvers.txt
+            mvn versions:set -DnewVersion=$(cat tempvers.txt) 
+      - run: mvn -s .circleci/settings.xml -DskipTests clean package
+      - run: mvn -s .circleci/settings.xml -DskipTests -DaltSnapshotDeploymentRepository=nexus::default::$REPO_URL/maven-snapshots/ -DaltReleaseDeploymentRepository=nexus::default::$REPO_URL/maven-releases/ deploy
+      
+      - run:
+          name: Build application Docker image
+          command: |
+            cp target/*.zip docker/apps/
+            mvn -s .circleci/settings.xml dependency:get -Dartifact=com.wm.mfs.domain:wmt-mfs-domain:$(cat tempdomainvers.txt):zip -Dtransitive=false -Ddest=docker/domains/
+            # removing version of domain zip to match what is in  mule's config
+            mv docker/domains/wmt-mfs-domain-$(cat tempdomainvers.txt).zip docker/domains/wmt-mfs-domain.zip
+            docker login -u $DOCKER_USER -p $DOCKER_PASS $DOCKER_REPO
+            docker build -t $DOCKER_REPO/$DOCKER_REPO_ORG/$CIRCLE_PROJECT_REPONAME:$(cat tempvers.txt) docker
+            docker push $DOCKER_REPO/$DOCKER_REPO_ORG/$CIRCLE_PROJECT_REPONAME:$(cat tempvers.txt)
