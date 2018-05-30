@@ -20,6 +20,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
 	<apikit:config name="wmt-mfs-crm-exp-config" raml="wmt-mfs-crm-exp.raml"
 		consoleEnabled="false" doc:name="Router" />
+
 	<flow name="wmt-mfs-crm-exp-main">
 		<http:listener config-ref="wmt-mfs-domain-httpListenerConfig"
 			path="/mfs-crm/*" doc:name="HTTP" />
@@ -37,6 +38,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<exception-strategy ref="wmt-mfs-crm-exp-apiKitGlobalExceptionMapping"
 			doc:name="Reference Exception Strategy" />
 	</flow>
+
 	<flow name="wmt-mfs-crm-exp-console">
 		<http:listener config-ref="wmt-mfs-domain-httpListenerConfig"
 			path="/mfs-crm/console/*" doc:name="HTTP" />
@@ -56,6 +58,14 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			endSnapKey="end_snap"
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
 			doc:name="Metrics Record Full Request" />
+    </flow>
+  
+    <flow name="post:/account-state:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+       		<metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+        	<!-- <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;            &quot;pin&quot;: &quot;123456&quot;&#xA;        }&#xA;]&#xA; }" doc:name="Set Payload"/> -->
+        	<flow-ref name="wmt-mfs-post-account-state-main-flow" doc:name="wmt-mfs-post-account-state-main-flow" />
+        	<metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+			<metrics:time config-ref="Metrics__Configuration"
 	</flow>
 
 	<flow name="get:/customer-info:wmt-mfs-crm-exp-config">
@@ -69,8 +79,21 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
 			endSnapKey="end_snap"
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
-			doc:name="Metrics Record Full Request" />
+			doc:name="Metrics Record Full Request" />        	
+    </flow>
+    
+    <flow name="post:/reset-secret-code:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+       		<metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+        	<!-- <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;            &quot;pin&quot;: &quot;123456&quot;&#xA;        }&#xA;]&#xA; }" doc:name="Set Payload"/> -->
+        	<flow-ref name="wmt-mfs-post-reset-secret-code-main-flow" doc:name="wmt-mfs-post-reset-secret-code-main-flow" />
+        	<metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+			<metrics:time config-ref="Metrics__Configuration" 
+        beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
+			  endSnapKey="end_snap"
+			  metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
+			  doc:name="Metrics Record Full Request" />
 	</flow>
+      
 	<flow name="get:/mapped-group:wmt-mfs-crm-exp-config">
 		<metrics:snap-time config-ref="Metrics__Configuration"
 			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
@@ -82,8 +105,17 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			endSnapKey="end_snap"
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
 			doc:name="Metrics Record Full Request" />
-	</flow>
-	<flow name="get:/transaction-info:wmt-mfs-crm-exp-config">
+    </flow>
+    
+    <flow name="post:/status-code-reset:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}" doc:name="Set Payload"/>
+    </flow>
+   
+    <flow name="post:/transaction-block:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+        <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}" doc:name="Set Payload"/>
+    </flow>
+
+   <flow name="get:/transaction-info:wmt-mfs-crm-exp-config">
 		<metrics:snap-time config-ref="Metrics__Configuration"
 			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
 		<flow-ref name="wmt-mfs-get-transaction-info-main-flow"
@@ -96,11 +128,13 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
 			doc:name="Metrics Record Full Request" />
 	</flow>
+      
 	<flow name="get:/parter-info:wmt-mfs-crm-exp-config">
 		<set-payload
 			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;            &quot;partner_code&quot;: &quot;MFPSMAMAND000416&quot;,&#xA;            &quot;parent_code&quot;: &quot;301&quot;,&#xA;            &quot;partner_email&quot;: &quot;demo@test.com&quot;&#xA;} ]&#xA;}"
 			doc:name="Set Payload" />
 	</flow>
+      
 	<flow name="get:/poi-limit:wmt-mfs-crm-exp-config">
 		<metrics:snap-time config-ref="Metrics__Configuration"
 			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
@@ -113,11 +147,13 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
 			doc:name="Metrics Record Full Request" />
 	</flow>
+      
 	<flow name="get:/pos-address:wmt-mfs-crm-exp-config">
 		<set-payload
 			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;&quot;data&quot;: [ {&#xA;           &quot;region&quot;: &quot;N/A&quot;,&#xA;           &quot;city&quot;: &quot;Mandalay&quot;,&#xA;           &quot;minicluster&quot;: &quot;Mahaaungmyay2&quot;,&#xA;           &quot;territory&quot;: &quot;Mandalay 2&quot;,&#xA;           &quot;cluster&quot;: &quot;Mandalay 1&quot;,&#xA;           &quot;address&quot;: &quot;81st42stx43st&quot;&#xA;} ]&#xA;}"
 			doc:name="Set Payload" />
 	</flow>
+      
 	<flow name="get:/transaction-status:wmt-mfs-crm-exp-config">
 		<metrics:snap-time config-ref="Metrics__Configuration"
 			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
@@ -131,6 +167,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
 			doc:name="Metrics Record Full Request" />
 	</flow>
+      
 	<flow name="get:/child-transactions:wmt-mfs-crm-exp-config">
 		<metrics:snap-time config-ref="Metrics__Configuration"
 			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
@@ -144,6 +181,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
 			doc:name="Metrics Record Full Request" />
 	</flow>
+      
 	<flow name="get:/wave-acc-info:wmt-mfs-crm-exp-config">
 		<metrics:snap-time config-ref="Metrics__Configuration"
 			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
@@ -157,20 +195,20 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
 			doc:name="Metrics Record Full Request" />
 	</flow>
-	<flow
-		name="post:/account-change-state:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+      
+	<flow name="post:/account-change-state:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
 		<set-payload
 			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}"
 			doc:name="Set Payload" />
 	</flow>
-	<flow
-		name="post:/e-statements:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+      
+	<flow name="post:/e-statements:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
 		<set-payload
 			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}"
 			doc:name="Set Payload" />
 	</flow>
-	<flow
-		name="post:/pin-reset:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+      
+	<flow name="post:/pin-reset:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
 		<metrics:snap-time config-ref="Metrics__Configuration"
 			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
 		<!-- <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 
@@ -185,35 +223,23 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			endSnapKey="end_snap"
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
 			doc:name="Metrics Record Full Request" />
-
 	</flow>
-	<flow
-		name="post:/status-code-reset:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
-		<set-payload
-			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}"
-			doc:name="Set Payload" />
-	</flow>
-	<flow
-		name="post:/transaction-block:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
-		<set-payload
-			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}"
-			doc:name="Set Payload" />
-	</flow>
-    <flow name="post:/transaction-resend-sms:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+      
+  <flow name="post:/transaction-resend-sms:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
         <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
         <flow-ref name="wmt-mfs-post-transaction-resend-sms-main-flow" doc:name="wmt-mfs-post-transaction-resend-sms-main-flow" />
         <metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
 		<metrics:time config-ref="Metrics__Configuration" beginSnapKey="begin_snap" category="#[flowVars.metricCategory]" endSnapKey="end_snap" metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]" doc:name="Metrics Record Full Request" />
         <!-- <set-payload value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}" doc:name="Set Payload"/> -->
-    </flow>
-	<flow
-		name="post:/transaction-unblock:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+  </flow>
+	
+  <flow name="post:/transaction-unblock:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
 		<set-payload
 			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}"
 			doc:name="Set Payload" />
 	</flow>
-	<flow
-		name="post:/login:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+      
+	<flow name="post:/login:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
 		<metrics:snap-time config-ref="Metrics__Configuration"
 			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
 		<flow-ref name="wmt-mfs-post-login-main-flow" doc:name="wmt-mfs-post-login-main-flow" />
@@ -225,6 +251,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
 			doc:name="Metrics Record Full Request" />
 	</flow>
+      
 	<apikit:mapping-exception-strategy
 		name="wmt-mfs-crm-exp-apiKitGlobalExceptionMapping">
 		<apikit:mapping statusCode="404">

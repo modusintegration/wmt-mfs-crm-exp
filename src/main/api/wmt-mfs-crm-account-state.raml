@@ -7,26 +7,26 @@ post:
           type: number
           required: true
           description: The MSISDN of the customer
-        account_state:
-          type: string
+        active:
           required: true
-          description: This is account state(Registred/Active/Frozen/Suspend/Stopped)
+          type: integer
+          description: account status 0 or 1
+        suspended:
+          required: true
+          type: string
+          description: account status 0 or 1
+        stopped:
+          required: true
+          type: string
+          description: account status 0 or 1
+        frozen:
+          required: true
+          type: string
+          description: account status 0 or 1
         reason:
-          type: string
           required: true
-          description: This is Customer reason in the String format.
-        verification1:
           type: string
-          required: true
-          description: This answer is checked for the 1st verification
-        verification2:
-          type: string
-          required: true
-          description: This answer is checked for the 2nd verification
-        verification3:
-          type: string
-          required: true
-          description: This answer is checked for the 3rd verification
+          description: reason for account state change
   responses: 
     200:
       description: On Successful response.  

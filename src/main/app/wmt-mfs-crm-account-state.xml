@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.9.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+
+    <flow name="wmt-mfs-post-account-state-main-flow">
+        
+        <logger message="At Change Account State" level="INFO" doc:name="Logger" category="com.wmt.crm.exp.account-state"/>
+        <set-variable variableName="flowName" value="wmt-mfs-post-account-state-main-flow" doc:name="Set Flow Name"/>
+        <!-- <message-properties-transformer doc:name="Message Properties">
+            <add-message-property key="password" value="#[message.inboundProperties.password]"/>
+            <add-message-property key="sessionId" value="#[message.inboundProperties.sessionId]"/>
+            <add-message-property key="msisdn" value="#[message.inboundProperties.msisdn]"/>
+            <add-message-property key="userLanguage" value="#[message.inboundProperties.userLanguage]"/>
+         </message-properties-transformer>   -->   
+        <component class="com.wmt.mfs.crm.exp.JWTHeaderToProperties" doc:name="JWTHeaderToProperties"/>
+        <message-properties-transformer doc:name="Message Properties">
+        </message-properties-transformer>       
+        <flow-ref name="wmt-mfs-post-account-state-request-flow" doc:name="wmt-mfs-post-account-state-request-flow"/>
+       
+        <logger message="Response: #[message.payloadAs(java.lang.String)]" level="DEBUG" category="com.wmt.crm.exp.account-state" doc:name="Logger"/>
+  
+    </flow>
+    
+    <flow name="wmt-mfs-post-account-state-request-flow">
+    
+    	<http:request config-ref="HTTP_Request_Configuration_for_PROC" path="/account-state" method="POST" doc:name="HTTP">
+            <http:success-status-code-validator values="200..299,400..499,500..599"/>
+        </http:request>
+          
+        <validation:is-true config-ref="Validation_Configuration" message="Request Error" exceptionClass="com.wmt.mfs.crm.exp.exception.WaveMoneyHttpException" expression="#[message.inboundProperties[&quot;http.status&quot;] == 200]" doc:name="Validation"/>
+        <component class="com.wmt.mfs.crm.exp.PropertiesToJWTHeader" doc:name="PropertiesToJWTHeader"/>
+    
+        <exception-strategy ref="wmt-mfs-crm-global-exception-choice_exception_strategy" doc:name="Reference Exception Strategy"/>
+    
+    </flow>
+
+</mule>
