@@ -66,6 +66,10 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         	<flow-ref name="wmt-mfs-post-account-state-main-flow" doc:name="wmt-mfs-post-account-state-main-flow" />
         	<metrics:snap-time config-ref="Metrics__Configuration" snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
 			<metrics:time config-ref="Metrics__Configuration"
+			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
+			endSnapKey="end_snap"
+			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
+			doc:name="Metrics Record Full Request" />
 	</flow>
 
 	<flow name="get:/customer-info:wmt-mfs-crm-exp-config">
