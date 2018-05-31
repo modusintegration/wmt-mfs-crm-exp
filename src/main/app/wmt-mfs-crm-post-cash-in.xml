@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/current/mule-ws.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+
+	<flow name="wmt-mfs-crm-post-cash-in-main-flow">
+
+		<logger message="At cash-in" level="INFO" category="com.wmt.crm.exp.cash-in"
+			doc:name="Logger" />
+
+		<set-variable variableName="flowName"
+			value="wmt-mfs-crm-post-cash-in-main-flow" doc:name="Set Flow Name" />
+		<!-- <component class="com.wmt.mfs.crm.exp.JWTHeaderToProperties"
+			doc:name="JWTHeaderToProperties" /> -->
+		<message-properties-transformer
+			doc:name="Message Properties">
+			<add-message-property key="content-type"
+				value="#[message.inboundProperties.'Content-Type']" />
+			<add-message-property key="accept-encoding"
+				value="#[message.inboundProperties.'accept-encoding']" />
+			<add-message-property key="deviceId"
+				value="#[message.inboundProperties.deviceId]" />
+			<add-message-property key="appId"
+				value="#[message.inboundProperties.appId]" />
+			<add-message-property key="appVersion"
+				value="#[message.inboundProperties.appVersion]" />
+			<add-message-property key="versionCode"
+				value="#[message.inboundProperties.versionCode]" />
+			<add-message-property key="userLanguage"
+				value="#[message.inboundProperties.'userLanguage']" />
+		</message-properties-transformer>
+
+		<flow-ref name="wmt-mfs-crm-post-cash-in-request-flow"
+			doc:name="wmt-mfs-crm-post-cash-in-request-flow" />
+
+	</flow>
+
+	<flow name="wmt-mfs-crm-post-cash-in-request-flow">
+
+		<set-variable variableName="flowName"
+			value="wmt-mfs-crm-post-cash-in-request-flow" doc:name="Set Flow Name" />
+
+		<http:request config-ref="HTTP_Request_Configuration_for_PROC"
+			path="/telncashin" method="POST" doc:name="HTTP">
+			<http:success-status-code-validator
+				values="200..299,400..499,500..599" />
+		</http:request>
+
+		<byte-array-to-object-transformer
+			doc:name="Byte Array to Object" />
+		<!-- <validation:is-true config-ref="Validation_Configuration"
+			message="Request Error" exceptionClass="com.wmt.mfs.crm.exp.exception.WaveMoneyHttpException"
+			expression="#[message.inboundProperties[&quot;http.status&quot;] == 200]"
+			doc:name="Validation" />
+		<component class="com.wmt.mfs.crm.exp.PropertiesToJWTHeader"
+			doc:name="PropertiesToJWTHeader" /> -->
+		<exception-strategy
+			ref="wmt-mfs-crm-global-exception-choice_exception_strategy"
+			doc:name="Reference Exception Strategy" />
+
+
+
+	</flow>
+
+</mule>

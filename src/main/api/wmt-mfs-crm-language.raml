@@ -1,0 +1,20 @@
+post:
+  description: Change Language
+  body: 
+    application/x-www-form-urlencoded:
+      properties:   
+        msisdn:
+          type: string
+          required: true
+          description: msisdn
+        language:
+          type: string
+          required: true
+          description: language - EN or BU
+  responses: 
+    200:
+      description: On Successful response.  
+      body: 
+        application/json:
+    304:
+      description: On unchanged response.

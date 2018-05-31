@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+
+    <flow name="wmt-mfs-post-language-main-flow">
+        <logger message="At Agent Hierarchy" level="INFO" doc:name="Logger" category="com.wmt.crm.exp.language"/>
+        <set-variable variableName="flowName" value="wmt-mfs-post-language-main-flow" doc:name="Set Flow Name"/>
+     <!--   <component class="com.wmt.mfs.crm.exp.JWTHeaderToProperties"
+			doc:name="JWTHeaderToProperties" />  -->
+        <flow-ref name="wmt-mfs-get-wave-acc-info-request-flow" doc:name="wmt-mfs-get-wave-acc-info-request-flow"/>
+       <message-properties-transformer doc:name="Message Properties">
+			<add-message-property key="accessToken" value="#[message.inboundProperties.accessToken]"/>
+			<add-message-property key="versionCode" value="#[message.inboundProperties.versionCode]" />
+			<add-message-property key="accept-encoding" value="#[message.inboundProperties.'accept-encoding']" />
+			<add-message-property key="sessionId" value="#[message.inboundProperties.sessionId]"/>
+			<add-message-property key="msisdn" value="#[message.inboundProperties.msisdn]"/>
+			<add-message-property key="password" value="#[message.inboundProperties.password]"/>
+			<add-message-property key="pin" value="#[message.inboundProperties.pin]"/>
+            <add-message-property key="content-type" value="#[message.inboundProperties.'content-type']"/>
+		</message-properties-transformer>
+        <!-- <component class="com.wmt.mfs.crm.exp.JWTHeaderToProperties" doc:name="JWTHeaderToProperties"/> -->
+        <flow-ref name="wmt-mfs-post-language-request-flow" doc:name="wmt-mfs-post-language-request-flow"/>
+        <logger message="Response: #[message.payloadAs(java.lang.String)]" level="DEBUG" category="com.wmt.crm.exp.login" doc:name="Logger"/>
+  		
+    </flow>
+    
+    <flow name="wmt-mfs-post-language-request-flow">
+    <http:request config-ref="HTTP_Request_Configuration_for_PROC" path="/language" method="POST" doc:name="HTTP">
+            <http:success-status-code-validator values="200..299,400..499,500..599"/>
+        </http:request>
+       <!--    <validation:is-true config-ref="Validation_Configuration" message="Request Error" exceptionClass="com.wmt.mfs.crm.exp.exception.WaveMoneyHttpException" expression="#[message.inboundProperties[&quot;http.status&quot;] == 200]" doc:name="Validation"/>
+        <component class="com.wmt.mfs.crm.exp.PropertiesToJWTHeader" doc:name="PropertiesToJWTHeader"/>
+     -->
+        <exception-strategy ref="wmt-mfs-crm-global-exception-choice_exception_strategy" doc:name="Reference Exception Strategy"/>
+    
+    </flow>
+</mule>

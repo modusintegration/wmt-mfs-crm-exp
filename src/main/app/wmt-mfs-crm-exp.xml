@@ -131,11 +131,11 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
 			doc:name="Metrics Record Full Request" />
 	</flow>
-	<flow name="get:/child-transactions:wmt-mfs-crm-exp-config">
+	<flow name="get:/wave-acc-info:wmt-mfs-crm-exp-config">
 		<metrics:snap-time config-ref="Metrics__Configuration"
 			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
-		<flow-ref name="wmt-mfs-get-child-transactions-main-flow"
-			doc:name="wmt-mfs-get-child-transactions-main-flow" />
+		<flow-ref name="wmt-mfs-get-wave-acc-info-main-flow"
+			doc:name="wmt-mfs-get-wave-acc-info-flow" />
 		<metrics:snap-time config-ref="Metrics__Configuration"
 			snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
 		<metrics:time config-ref="Metrics__Configuration"
@@ -144,7 +144,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
 			doc:name="Metrics Record Full Request" />
 	</flow>
-	<flow name="get:/wave-acc-info:wmt-mfs-crm-exp-config">
+	<flow name="get:/language:wmt-mfs-crm-exp-config">
 		<metrics:snap-time config-ref="Metrics__Configuration"
 			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
 		<flow-ref name="wmt-mfs-get-wave-acc-info-main-flow"
@@ -168,6 +168,21 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<set-payload
 			value="{&#xA;&quot;status&quot;: {&#xA;&quot;code&quot;: 200,&#xA;        &quot;message&quot;: &quot;OK&quot;&#xA;    },&#xA;    &quot;data&quot;: [ {&#xA;            &quot;message&quot;: &quot;Details will be available later&quot;&#xA;        }&#xA;]&#xA;}"
 			doc:name="Set Payload" />
+	</flow>
+	
+	<flow
+		name="post:/language:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+		<flow-ref name="wmt-mfs-post-language-main-flow" doc:name="wmt-mfs-post-language-main-flow" />
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+		<metrics:time config-ref="Metrics__Configuration"
+			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
+			endSnapKey="end_snap"
+			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
+			doc:name="Metrics Record Full Request" />
+
 	</flow>
 	<flow
 		name="post:/pin-reset:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
@@ -223,6 +238,23 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 			endSnapKey="end_snap"
 			metricKey="#[(message.inboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
 			doc:name="Metrics Record Full Request" />
+	</flow>
+	<flow name="post:/cash-in:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config">
+		
+		<set-variable variableName="flowName" value="post:/cash-in:application/x-www-form-urlencoded:wmt-mfs-crm-exp-config" doc:name="Set Flow Name"/>
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="begin_snap" doc:name="Metrics - Begin Snap" />
+		<flow-ref name="wmt-mfs-crm-post-cash-in-main-flow"
+			doc:name="wmt-mfs-crm-post-cash-in-main-flow" />
+		<metrics:snap-time config-ref="Metrics__Configuration"
+			snapTimeKey="end_snap" doc:name="Metrics - End Snap" />
+
+		<metrics:time config-ref="Metrics__Configuration"
+			beginSnapKey="begin_snap" category="#[flowVars.metricCategory]"
+			endSnapKey="end_snap"
+			metricKey="#[(message.outboundProperties[&quot;http.status&quot;]!=200?&quot;Invalid-Response&quot;:&quot;Valid-Response&quot;)]"
+			doc:name="Metrics Record Full Request" />
+			
 	</flow>
 	<apikit:mapping-exception-strategy
 		name="wmt-mfs-crm-exp-apiKitGlobalExceptionMapping">
