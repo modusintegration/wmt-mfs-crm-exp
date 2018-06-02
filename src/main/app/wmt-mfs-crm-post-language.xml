@@ -20,10 +20,6 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
        <message-properties-transformer doc:name="Message Properties">
 			<add-message-property key="accessToken" value="#[message.inboundProperties.accessToken]"/>
 			<add-message-property key="accept-encoding" value="#[message.inboundProperties.'accept-encoding']" />
-			<!-- <add-message-property key="sessionId" value="#[message.inboundProperties.sessionId]"/>
-			<add-message-property key="msisdn" value="#[message.inboundProperties.msisdn]"/>
-			<add-message-property key="password" value="#[message.inboundProperties.password]"/>
-			<add-message-property key="pin" value="#[message.inboundProperties.pin]"/> -->
             <add-message-property key="content-type" value="#[message.inboundProperties.'content-type']"/>
 		</message-properties-transformer>
         <!-- <component class="com.wmt.mfs.crm.exp.JWTHeaderToProperties" doc:name="JWTHeaderToProperties"/> -->

@@ -72,8 +72,6 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 			ref="wmt-mfs-crm-global-exception-choice_exception_strategy"
 			doc:name="Reference Exception Strategy" />
 
-
-
 	</flow>
 
 </mule>
