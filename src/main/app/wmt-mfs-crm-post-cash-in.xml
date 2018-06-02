@@ -24,8 +24,8 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 
 		<set-variable variableName="flowName"
 			value="wmt-mfs-crm-post-cash-in-main-flow" doc:name="Set Flow Name" />
-		<!-- <component class="com.wmt.mfs.crm.exp.JWTHeaderToProperties"
-			doc:name="JWTHeaderToProperties" /> -->
+		 <component class="com.wmt.mfs.crm.exp.JWTHeaderToProperties"
+			doc:name="JWTHeaderToProperties" /> 
 		<message-properties-transformer
 			doc:name="Message Properties">
 			<add-message-property key="content-type"
@@ -33,15 +33,15 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 			<add-message-property key="accept-encoding"
 				value="#[message.inboundProperties.'accept-encoding']" />
 			<add-message-property key="deviceId"
-				value="#[message.inboundProperties.deviceId]" />
+				value="crm" />
 			<add-message-property key="appId"
-				value="#[message.inboundProperties.appId]" />
+				value="crm" />
 			<add-message-property key="appVersion"
-				value="#[message.inboundProperties.appVersion]" />
+				value="crm" />
 			<add-message-property key="versionCode"
-				value="#[message.inboundProperties.versionCode]" />
+				value="crm" />
 			<add-message-property key="userLanguage"
-				value="#[message.inboundProperties.'userLanguage']" />
+				value="EN" />
 		</message-properties-transformer>
 
 		<flow-ref name="wmt-mfs-crm-post-cash-in-request-flow"
@@ -62,12 +62,12 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 
 		<byte-array-to-object-transformer
 			doc:name="Byte Array to Object" />
-		<!-- <validation:is-true config-ref="Validation_Configuration"
+		 <validation:is-true config-ref="Validation_Configuration"
 			message="Request Error" exceptionClass="com.wmt.mfs.crm.exp.exception.WaveMoneyHttpException"
 			expression="#[message.inboundProperties[&quot;http.status&quot;] == 200]"
 			doc:name="Validation" />
 		<component class="com.wmt.mfs.crm.exp.PropertiesToJWTHeader"
-			doc:name="PropertiesToJWTHeader" /> -->
+			doc:name="PropertiesToJWTHeader" /> 
 		<exception-strategy
 			ref="wmt-mfs-crm-global-exception-choice_exception_strategy"
 			doc:name="Reference Exception Strategy" />
