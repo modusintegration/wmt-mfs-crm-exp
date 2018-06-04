@@ -1,0 +1,21 @@
+  
+  post:
+    description: This API is used to transfer money
+    body: 
+      application/x-www-form-urlencoded:      
+        properties:
+          customerMsisdn:
+            description: MSISDN of the customer to whom the money is to be transfered 
+            type: file-types.Msisdn
+            required: true  
+          amount:
+            description: Amount to transfer 
+            type: file-types.Amount
+            required: true        
+    responses: 
+      200:
+        description: Transfer done  
+        body: 
+          application/json:
+            type: file-types.CashInResponse
+            example: !include examples/wmt-agent-cash-in-response.json
