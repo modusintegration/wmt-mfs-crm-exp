@@ -9,7 +9,23 @@ types:
      customers:
       type: array
       items: CustomerResponseMap
-
+      
+# ================== CashIn  ==================
+  CashInResponse:
+     type: object
+     description: "MFS Cash In Response"
+     properties: 
+        responseMap: CashInResponseMap
+        message: Message
+  CashInResponseMap:
+     type: object
+     properties: 
+        transactionId: TransactionId 
+# ******* TransactionId ***********
+  TransactionId:
+     type: string
+     required: false
+     description: "Transaction id" 
 # ********** Customer List Response Object ******
   CustomerListResponseObject:
     type: object
@@ -18,6 +34,10 @@ types:
       message: Message
       respTime: RespTime
       statusCode: StatusCode
+# ******* Amount ***********
+  Amount:
+     type: number
+     description: "Amount"   
 
 # *********** Customer Response Map **********
   CustomerResponseMap:
