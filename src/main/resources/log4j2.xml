@@ -52,16 +52,16 @@
         <AsyncLogger name="org.jetel" level="WARN"/>
         <AsyncLogger name="Tracking" level="WARN"/>
         
-        <AsyncLogger name="metrics" level="DEBUG">
-        	<AppenderRef ref="metrics" />
-      		<AppenderRef ref="console" />
-        </AsyncLogger>
-        
         <AsyncLogger name="com.wmt.*" level="DEBUG"/>                
         
-        <AsyncRoot level="INFO">
-            <AppenderRef ref="file"/>
-            <AppenderRef ref="console"/>
+        <AsyncRoot level="${sys:mule.log.level}">
+            <AppenderRef ref="file" />
+            <AppenderRef ref="console" />
         </AsyncRoot>
+        
+        <AsyncLogger name="metrics" level="${sys:mule.metric.log.level}">
+           <AppenderRef ref="metrics" />
+	       <AppenderRef ref="console" />
+       </AsyncLogger>
     </Loggers>
 </Configuration>

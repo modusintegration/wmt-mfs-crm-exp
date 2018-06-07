@@ -1,4 +1,4 @@
-FROM modusbox-wm-docker.jfrog.io/wavemoney/mule-ee-docker:3.9.0-85baae8-14
+FROM modusbox-wm-docker.jfrog.io/wavemoney/mule-ee-docker:3.9.0-717380b-18
 LABEL maintainer="David Fry <david.fry@modusbox.com>"
 
 ENV MULE_TMP_APP_DIR=/opt/mule/tempapps MULE_CONTAINER_AUTO_DEPLOY=true TZ=Asia/Yangon
