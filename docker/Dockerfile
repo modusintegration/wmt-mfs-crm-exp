@@ -1,7 +1,7 @@
 FROM modusbox-wm-docker.jfrog.io/wavemoney/mule-ee-docker:3.9.0-1658d9e-22
 LABEL maintainer="David Fry <david.fry@modusbox.com>"
 
-ENV MULE_TMP_APP_DIR=/opt/mule/tempapps MULE_CONTAINER_AUTO_DEPLOY=true TZ=Etc/GMT
+ENV MULE_TMP_APP_DIR=/opt/mule/tempapps MULE_CONTAINER_AUTO_DEPLOY=true TZ=Asia/Rangoon
 
 RUN mkdir $MULE_TMP_APP_DIR && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
