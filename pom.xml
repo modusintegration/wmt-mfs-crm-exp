@@ -14,7 +14,7 @@
 
 		<mule.version>3.9.0</mule.version>
     	<mule.tools.version>1.2</mule.tools.version>
-		<wmt.mfs.domain.version>1.0.0</wmt.mfs.domain.version>
+		<wmt.mfs.domain.version>1.0.3</wmt.mfs.domain.version>
 	</properties>
 
 	<build>
