@@ -102,7 +102,7 @@ public class JwtUtil {
 		logger.info("*** Creating JWE ***");
 		
 		logger.debug("Mule Payload Class: " + eventContext.getMessage().getPayload().getClass().getName());
-		logger.debug("Mule Payload Value: " + eventContext.getMessage().getPayloadForLogging());
+		logger.debug("Mule Payload Value: " + eventContext.getMessage().getPayload());
 		 
 		try {
 
@@ -163,7 +163,7 @@ public class JwtUtil {
 		logger.info("*** Creating JWT ****"); 
 		
 		logger.debug("Mule Payload Class: " + eventContext.getMessage().getPayload().getClass().getName());
-		logger.debug("Mule Payload Value: " + eventContext.getMessage().getPayloadForLogging());
+		logger.debug("Mule Payload Value: " + eventContext.getMessage().getPayload());
 		
 
 		// Create the Claims, which will be the content of the JWT

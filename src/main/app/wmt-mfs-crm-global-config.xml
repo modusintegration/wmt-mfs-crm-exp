@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+<mule xmlns:cluster="http://www.mulesoft.org/schema/mule/ee/cluster" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns:metrics="http://www.mulesoft.org/schema/mule/metrics"
@@ -61,5 +61,6 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 	<context:property-placeholder ignore-resource-not-found="true" location="wmt-mfs-crm-exp.properties,wmt-mfs-crm-exp-sec.properties,wmt-mfs-crm-exp-override.properties,wmt-mfs-crm-exp-sec-override.properties"/>
 
 	<validation:config name="Validation_Configuration" doc:name="Validation Configuration"/>
+    <configuration defaultExceptionStrategy-ref="wmt-mfs-crm-global-exception-choice_exception_strategy" doc:name="Configuration"/>
 
 </mule>

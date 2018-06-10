@@ -8,10 +8,6 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
     
-    <configuration defaultExceptionStrategy-ref="wmt-mfs-crm-global-exception-choice_exception_strategy" doc:name="Configuration">
-        <http:config useTransportForUris="false"/>
-    </configuration>
-    
     <choice-exception-strategy name="wmt-mfs-crm-global-exception-choice_exception_strategy">
         
         <catch-exception-strategy doc:name="Catch Exception Strategy - HTTP Request" when="#[exception.causedBy(com.wmt.mfs.crm.exp.exception.WaveMoneyHttpException)]">
