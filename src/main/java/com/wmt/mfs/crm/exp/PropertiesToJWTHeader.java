@@ -1,5 +1,7 @@
 package com.wmt.mfs.crm.exp;
 
+import java.util.StringTokenizer;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jose4j.jwt.JwtClaims;
@@ -28,7 +30,27 @@ public class PropertiesToJWTHeader implements Callable{
 		String password = (String)eventContext.getMessage().getInboundProperty("password");
 		String pin = (String)eventContext.getMessage().getInboundProperty("pin"); 
 		
-		eventContext.getMessage().setInvocationProperty("CurrentProperties",(sessionId + "|" + msisdn + "|" + password + "|" + pin));
+        if(sessionId == null || msisdn == null || password == null || pin == null){
+			
+			String currentProperties = eventContext.getMessage().getProperty("CurrentProperties", PropertyScope.SESSION);
+			
+			if(currentProperties != null)
+			{
+				
+				StringTokenizer tokenizer = new StringTokenizer(currentProperties, "|");
+				
+				 sessionId = tokenizer.nextToken();
+				 msisdn = tokenizer.nextToken();
+				 password = tokenizer.nextToken();
+				 pin = tokenizer.nextToken(); 
+				 
+				 logger.info("CurrentProperties: sessionId- " + sessionId + "| msisdn- " + msisdn + "| password- " + password + "| pin- " + pin);
+			}else{
+				logger.error("Lost CurrentProperties");
+			}
+		}
+		
+		eventContext.getMessage().setProperty("CurrentProperties",(sessionId + "|" + msisdn + "|" + password), PropertyScope.SESSION);
 		 
 		JwtClaims claims = new JwtClaims();
 		claims.setClaim("sessionId",sessionId);

@@ -36,8 +36,8 @@ public class JWTHeaderToProperties implements Callable{
 		eventContext.getMessage().setProperty("pin", pin , PropertyScope.OUTBOUND);
 		eventContext.getMessage().setProperty("userType", "agent", PropertyScope.OUTBOUND);
 		
-		eventContext.getMessage().setInvocationProperty("CurrentProperties",(sessionId + "|" + msisdn + "|" + password + "|" + pin));
-		 
+		eventContext.getMessage().setProperty("CurrentProperties",(sessionId + "|" + msisdn + "|" + password + "|" + pin), PropertyScope.SESSION); 
+		
 		return eventContext.getMessage().getPayload();
 	}
 
