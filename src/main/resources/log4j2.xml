@@ -22,8 +22,8 @@
            <SizeBasedTriggeringPolicy size="10 MB" />
            <DefaultRolloverStrategy max="10"/>
        </RollingFile>
-        <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d [%t] %-5p %c - %m%n" />
+<!--        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d [%t] %-5p %c - %m%n" />   -->
         </Console> 
     </Appenders>
     <Loggers>
@@ -52,16 +52,17 @@
         <AsyncLogger name="org.jetel" level="WARN"/>
         <AsyncLogger name="Tracking" level="WARN"/>
         
-        <AsyncLogger name="metrics" level="DEBUG">
-        	<AppenderRef ref="metrics" />
-      		<AppenderRef ref="console" />
-        </AsyncLogger>
-        
-        <AsyncLogger name="com.wmt.*" level="DEBUG"/>                
-        
-        <AsyncRoot level="INFO">
-            <AppenderRef ref="file"/>
-            <AppenderRef ref="console"/>
+        <AsyncLogger name="com.wmt.*" level="DEBUG"/>
+	    
+        <AsyncRoot level="${sys:mule.log.level}">
+            <AppenderRef ref="file" />
+<!--        <AppenderRef ref="console"/>          -->
         </AsyncRoot>
+        
+        <AsyncLogger name="metrics" level="${sys:mule.metric.log.level}">
+           <AppenderRef ref="metrics" />
+<!--   		<AppenderRef ref="console" />     -->
+       </AsyncLogger>
+	    
     </Loggers>
 </Configuration>
