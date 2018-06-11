@@ -57,5 +57,5 @@ jobs:
             # removing version of domain zip to match what is in  mule's config
             mv docker/domains/wmt-mfs-domain-$(cat tempdomainvers.txt).zip docker/domains/wmt-mfs-domain.zip
             docker login -u $DOCKER_USER -p $DOCKER_PASS $DOCKER_REPO
-            docker build -t $DOCKER_REPO/$DOCKER_REPO_ORG/$CIRCLE_PROJECT_REPONAME:$(cat tempvers.txt) docker
+            docker build --no-cache -t $DOCKER_REPO/$DOCKER_REPO_ORG/$CIRCLE_PROJECT_REPONAME:$(cat tempvers.txt) docker
             docker push $DOCKER_REPO/$DOCKER_REPO_ORG/$CIRCLE_PROJECT_REPONAME:$(cat tempvers.txt)
