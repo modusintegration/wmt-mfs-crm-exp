@@ -35,7 +35,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 
 		<apikit:router config-ref="wmt-mfs-crm-exp-config"
 			doc:name="APIkit Router" />
-		<exception-strategy ref="wmt-mfs-crm-exp-apiKitGlobalExceptionMapping"
+		<exception-strategy ref="wmt-mfs-crm-global-exception-choice_exception_strategy"
 			doc:name="Reference Exception Strategy" />
 	</flow>
 

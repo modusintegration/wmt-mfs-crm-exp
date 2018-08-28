@@ -60,7 +60,18 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 
 	<context:property-placeholder ignore-resource-not-found="true" location="wmt-mfs-crm-exp.properties,wmt-mfs-crm-exp-sec.properties,wmt-mfs-crm-exp-override.properties,wmt-mfs-crm-exp-sec-override.properties"/>
 
-	<validation:config name="Validation_Configuration" doc:name="Validation Configuration"/>
+    
+    <validation:config name="Validation_Configuration" doc:name="Validation Configuration"/>
+		
+	<validation:config name="ValidationWithFactory_Configuration" doc:name="Validation Configuration">
+        <validation:exception-factory class="com.wmt.mfs.crm.exp.exception.WaveMoneyExceptionFactory"/>
+    </validation:config>
+    
     <configuration defaultExceptionStrategy-ref="wmt-mfs-crm-global-exception-choice_exception_strategy" doc:name="Configuration"/>
-
+	<configuration doc:name="Configuration" defaultExceptionStrategy-ref="wmt-mfs-crm-global-exception-choice_exception_strategy">
+        <expression-language> 
+            <import class="com.wavemoney.util.TransformerUtil" />  
+            <global-functions file="mvel/GlobalUtil.mvel"></global-functions>  
+        </expression-language> 
+    </configuration>
 </mule>
