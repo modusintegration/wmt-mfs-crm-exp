@@ -20,10 +20,10 @@ public class GenerateJWTHeaderAfterException implements Callable {
 
 		Object returnValue = null;
 		
-		logger.info("=== Generating WMT after Exception ==="); 
+		logger.info("=== Generating WMT after Exception ==="); 		
 		
 		String currentProperties = eventContext.getMessage().getProperty("CurrentProperties", PropertyScope.SESSION);
-
+		
 		if(currentProperties != null)
 		{
 			
@@ -31,16 +31,13 @@ public class GenerateJWTHeaderAfterException implements Callable {
 			
 			String sessionId = tokenizer.nextToken();
 			String msisdn = tokenizer.nextToken();
-			String password = tokenizer.nextToken();
-			String pin = tokenizer.nextToken(); 
+			String password = tokenizer.nextToken(); 
 			
 			logger.info("MSISDN after Exception: " + msisdn);
 			
 			eventContext.getMessage().setProperty("sessionId", sessionId , PropertyScope.INBOUND);
 			eventContext.getMessage().setProperty("msisdn", msisdn , PropertyScope.INBOUND);
-			eventContext.getMessage().setProperty("password", password , PropertyScope.INBOUND);
-			eventContext.getMessage().setProperty("pin", pin , PropertyScope.INBOUND);
-	 	
+			eventContext.getMessage().setProperty("password", password , PropertyScope.INBOUND); 
 		}else{
 			logger.error("Lost CurrentProperties after Exception");
 		}
