@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <sub-flow name="wmt-mfs-jwt-validation-financial-sub-flow">
+        <dw:transform-message doc:name="Set Validate Security Token Request">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+securityToken: flowVars.nonce]]></dw:set-payload>
+        </dw:transform-message>
+        <message-properties-transformer doc:name="Message Properties">
+            <add-message-property key="accept-encoding" value="application/json"/>
+            <add-message-property key="appId" value="test"/>
+            <add-message-property key="appVersion" value="test"/>
+            <add-message-property key="versionCode" value="test"/>
+            <add-message-property key="deviceId" value="test"/>
+            <add-message-property key="userLanguage" value="en"/>
+            <add-message-property key="Content-Type" value="application/x-www-form-urlencoded" />
+        </message-properties-transformer>
+        <http:request config-ref="HTTP_Request_Configuration_for_PROC" path="/validate-security-token" method="POST" doc:name="Validate Security Token HTTP Call"/>
+        <dw:transform-message doc:name="Read Validate Security Token Response">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload]]></dw:set-payload>
+            <dw:set-variable variableName="validVar"><![CDATA[%dw 1.0
+%output application/java
+---
+payload.responseMap.valid]]></dw:set-variable>
+        </dw:transform-message>
+        <choice doc:name="Choice">
+            <when expression="#[flowVars.ValidVar == '1']">
+                <logger message="Valid Nonce, continuing execution" level="INFO" category="com.wmt.crm.exp.jwt-validation" doc:name="Logger"/>
+            </when>
+            <otherwise>
+                <logger message="Invalid Nonce, stopping execution" level="ERROR" category="com.wmt.crm.exp.jwt-validation" doc:name="Logger"/>
+                <expression-component doc:name="Expression"><![CDATA[throw new WaveMoneyJWTException(500, "JW14", "JWE Invalid Nonce");]]></expression-component>
+            </otherwise>
+        </choice>
+        <logger message="Response: #[message.payloadAs(java.lang.String)]" level="INFO" category="com.wmt.crm.exp.jwt-validation" doc:name="Logger"/>
+        <logger message="Response Message: #[message]" level="INFO" category="com.wmt.crm.exp.jwt-validation" doc:name="Logger"/>
+    </sub-flow>
+    <sub-flow name="wmt-mfs-jwt-validation-non-financial-sub-flow">
+        <logger message="Response Message: #[message]" level="INFO" category="com.wmt.crm.exp.jwt-validation" doc:name="Logger"/>
+        <dw:transform-message doc:name="Set Validate Security Token Request">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+securityToken: flowVars.nonce]]></dw:set-payload>
+        </dw:transform-message>
+        <message-properties-transformer doc:name="Message Properties">
+            <add-message-property key="accept-encoding" value="application/json"/>
+            <add-message-property key="appId" value="test"/>
+            <add-message-property key="appVersion" value="test"/>
+            <add-message-property key="versionCode" value="test"/>
+            <add-message-property key="deviceId" value="test"/>
+            <add-message-property key="userLanguage" value="en"/>
+            <add-message-property key="Content-Type" value="application/x-www-form-urlencoded" />
+        </message-properties-transformer>
+        <http:request config-ref="HTTP_Request_Configuration_for_PROC" path="/validate-security-token" method="POST" doc:name="Validate Security Token HTTP Call"/>
+        <dw:transform-message doc:name="Read Validate Security Token Response">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload]]></dw:set-payload>
+            <dw:set-variable variableName="validVar"><![CDATA[%dw 1.0
+%output application/java
+---
+payload.responseMap.valid]]></dw:set-variable>
+        </dw:transform-message>
+        <logger message="Response: #[message.payloadAs(java.lang.String)]" level="INFO" category="com.wmt.crm.exp.jwt-validation-non-financial-sub-flow" doc:name="Logger"/>
+        <logger message="Message After ME: #[message]" level="INFO" category="jwt-validation-non-financial-sub-flow" doc:name="Logger"/>  
+    </sub-flow>
+    <sub-flow name="wmt-mfs-jwt-generation-sub-flow">
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+payload]]></dw:set-payload>
+        </dw:transform-message>
+        <message-properties-transformer doc:name="Message Properties">
+            <add-message-property key="accept-encoding" value="application/json"/>
+            <add-message-property key="appId" value="test"/>
+            <add-message-property key="appVersion" value="test"/>
+            <add-message-property key="versionCode" value="test"/>
+            <add-message-property key="deviceId" value="test"/>
+            <add-message-property key="userLanguage" value="en"/>
+        </message-properties-transformer>
+        <http:request config-ref="HTTP_Request_Configuration_for_PROC" path="/security-token" method="GET" doc:name="Security Token HTTP Call"/>
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload]]></dw:set-payload>
+            <dw:set-variable variableName="nonce"><![CDATA[%dw 1.0
+%output application/java
+---
+payload.responseMap.securityCounter]]></dw:set-variable>
+        </dw:transform-message>
+        <logger message="Payload At generation SubFlow: #[payload]" level="INFO" category="generation-sub-flow" doc:name="Logger"/>
+    </sub-flow>
+    
+    <sub-flow name="wmt-mfs-nonce-validation-sub-flow">
+        <dw:transform-message doc:name="Set Validate Security Token Request">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+securityToken: flowVars.nonce]]></dw:set-payload>
+        </dw:transform-message>
+        <message-properties-transformer doc:name="Message Properties">
+            <add-message-property key="accept-encoding" value="application/json"/>
+            <add-message-property key="appId" value="test"/>
+            <add-message-property key="appVersion" value="test"/>
+            <add-message-property key="versionCode" value="test"/>
+            <add-message-property key="deviceId" value="test"/>
+            <add-message-property key="userLanguage" value="en"/>
+            <add-message-property key="Content-Type" value="application/x-www-form-urlencoded" />
+        </message-properties-transformer>
+        <http:request config-ref="HTTP_Request_Configuration_for_PROC" path="/validate-security-token" method="POST" doc:name="Validate Security Token HTTP Call"/>
+        <dw:transform-message doc:name="Read Validate Security Token Response">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload]]></dw:set-payload>
+            <dw:set-variable variableName="validVar"><![CDATA[%dw 1.0
+%output application/java
+---
+payload.responseMap.valid]]></dw:set-variable>
+        </dw:transform-message>
+        <choice doc:name="Choice">
+            <when expression="#[flowVars.ValidVar == '1']">
+                <logger message="Valid Nonce, continuing execution" level="INFO" category="com.wmt.crm.exp.jwt-validation" doc:name="Logger"/>
+            </when>
+            <otherwise>
+                <logger message="Invalid Nonce, stopping execution" level="ERROR" category="com.wmt.crm.exp.jwt-validation" doc:name="Logger"/>
+                <expression-component doc:name="Expression"><![CDATA[throw new WaveMoneyJWTException(500, "NONCE_ERR", "Invalid Nonce");]]></expression-component>
+            </otherwise>
+        </choice>
+        <logger message="Response: #[message.payloadAs(java.lang.String)]" level="INFO" category="com.wmt.crm.exp.jwt-validation" doc:name="Logger"/>
+        <logger message="Response Message: #[message]" level="INFO" category="com.wmt.crm.exp.jwt-validation" doc:name="Logger"/>
+    </sub-flow>    
+
+    <flow name="wmt-mfs-jwt-generation-flow">
+        <logger message="Message Before ME: #[message]" level="INFO" category="generation-flow" doc:name="Logger"/>
+        <enricher doc:name="Message Enricher" source="#[flowVars.nonce]" target="#[flowVars.nonce]">
+            <flow-ref name="wmt-mfs-jwt-generation-sub-flow" doc:name="Flow Reference"/>
+        </enricher>
+        <component class="com.wmt.mfs.crm.exp.PropertiesToJWTHeader" doc:name="PropertiesToJWTHeader"/>
+        <!-- <expression-component doc:name="Expression"><![CDATA[message.outboundProperties ['wmt-mfs'] = flowVars.jwtToken]]></expression-component> -->
+        <logger message="Message After ME: #[message]" level="INFO" category="generation-flow" doc:name="Logger"/>
+    </flow>
+    <flow name="wmt-mfs-jwt-validation-non-financial-flow">
+        <logger message="Message Before ME: #[message]" level="INFO" category="jwt-validation-non-financial-flow" doc:name="Logger"/>
+        <logger message="Payload Before ME: #[payload]" level="INFO" category="jwt-validation-non-financial-flow" doc:name="Logger"/>
+        <component class="com.wmt.mfs.crm.exp.JWTHeaderToProperties" doc:name="JWTHeaderToProperties"/>
+        <enricher doc:name="Message Enricher" source="#[flowVars.validVar]" target="#[flowVars.validVar]">
+            <flow-ref name="wmt-mfs-jwt-validation-non-financial-sub-flow" doc:name="Flow Reference"/>
+        </enricher>
+        <logger message="Message After ME: #[message]" level="INFO" category="jwt-validation-non-financial-flow" doc:name="Logger"/>
+        <logger message="Payload After ME: #[payload]" level="INFO" category="jwt-validation-non-financial-flow" doc:name="Logger"/>
+    </flow>
+    
+    <flow name="wmt-mfs-jwt-validation-financial-flow">
+        <logger message="Message Before ME: #[message]" level="INFO" category="jwt-validation-financial-flow" doc:name="Logger"/>
+        <logger message="Payload Before ME: #[payload]" level="INFO" category="jwt-validation-financial-flow" doc:name="Logger"/>
+        <component class="com.wmt.mfs.crm.exp.JWTHeaderToPropertiesFinOps" doc:name="JWTHeaderToPropertiesFinOps"/>
+        <enricher doc:name="Message Enricher" source="#[flowVars.validVar]" target="#[flowVars.validVar]">
+            <flow-ref name="wmt-mfs-jwt-validation-financial-sub-flow" doc:name="Flow Reference"/>
+        </enricher>
+        <logger message="Message After ME: #[message]" level="INFO" category="jwt-validation-financial-flow" doc:name="Logger"/>
+        <logger message="Payload After ME: #[payload]" level="INFO" category="jwt-validation-financial-flow" doc:name="Logger"/>
+    </flow>
+    
+    <flow name="wmt-mfs-nonce-validation-flow">
+        <logger message="Message Before ME: #[message]" level="INFO" category="nonce-validation-flow" doc:name="Logger"/>
+        <logger message="Payload Before ME: #[payload]" level="INFO" category="nonce-validation-flow" doc:name="Logger"/>
+        <logger message="Nonce Before ME: #[flowVars.nonce]" level="INFO" category="nonce-validation-flow" doc:name="Logger"/>
+        <enricher doc:name="Message Enricher" source="#[flowVars.validVar]" target="#[flowVars.validVar]">
+            <flow-ref name="wmt-mfs-nonce-validation-sub-flow" doc:name="Flow Reference"/>
+        </enricher>
+        <logger message="Message After ME: #[message]" level="INFO" category="nonce-validation-flow" doc:name="Logger"/>
+        <logger message="Payload After ME: #[payload]" level="INFO" category="nonce-validation-flow" doc:name="Logger"/>
+        <logger message="Nonce After ME: #[flowVars.nonce]" level="INFO" category="nonce-validation-flow" doc:name="Logger"/>
+    </flow>
+
+</mule>

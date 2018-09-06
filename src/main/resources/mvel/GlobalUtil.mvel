@@ -1,0 +1,6 @@
+def getExceptionMessage(exception) {
+	return TransformerUtil.getExceptionMessage(exception);
+} 
+def getCauseMessage(exception) {
+	return TransformerUtil.getCauseMessage(exception);
+} 

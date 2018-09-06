@@ -7,79 +7,131 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-    
+    <!-- remove that comment -->
     <choice-exception-strategy name="wmt-mfs-crm-global-exception-choice_exception_strategy">
+    
+    	<catch-exception-strategy doc:name="Catch Exception Strategy - Wave Money Exception" when="#[exception.causedBy(com.wmt.mfs.crm.exp.exception.WaveMoneyException)]">
+            <expression-component doc:name="Get Exception Value"><![CDATA[flowVars.waveMoneyException = exception.getCause(); 
+flowVars.ExpierenceLayerResponseError = flowVars.waveMoneyException.getExperienceLayerResponseError();
+]]></expression-component>
+            <flow-ref name="wmt-mfs-global-exception-flow" doc:name="wmt-mfs-global-exception-flow"/>
+        </catch-exception-strategy>
         
-        <catch-exception-strategy doc:name="Catch Exception Strategy - HTTP Request" when="#[exception.causedBy(com.wmt.mfs.crm.exp.exception.WaveMoneyHttpException)]">
-            <logger message="Exception Class #[(exception.cause!=null)?(exception.cause.message):exception]" level="INFO" doc:name="Logger" category="com.wmt.mfs.agent.exp"/>
-            <expression-component doc:name="Expression"><![CDATA[flowVars.errorCode="0000";
-flowVars.httpStatusCode=message.inboundProperties["http.status"]; 
-flowVars.errorMessage=exception.getCause().getErrorMessage();]]></expression-component>
-
-            <choice doc:name="Choice">
-                <when expression="#[message.inboundProperties[&quot;content-type&quot;].contains(&quot;application/json&quot;)]">
-                    <dw:transform-message doc:name="Transform Message">
-                        <dw:set-variable variableName="errorMessage"><![CDATA[%dw 1.0
+        <catch-exception-strategy doc:name="Catch Exception Strategy - Connect Exception" when="#[exception.causedBy(java.net.ConnectException)]">
+            <set-variable variableName="errorException" value="#[exception]" doc:name="Set Error Exception"/>
+            <dw:transform-message doc:name="Transform Message" metadata:id="cfa2837f-888a-40d7-b2d2-86f04dabde01">
+                <dw:set-variable variableName="ExpierenceLayerResponseError"><![CDATA[%dw 1.0
 %output application/java
 ---
-payload.message]]></dw:set-variable>
-                    </dw:transform-message>
-                </when>
-                <otherwise>
-                    <set-variable variableName="errorMessage" value="#[(exception.cause!=null)?(exception.cause.message):exception]" doc:name="Set Error Message"/>
-                </otherwise>
-            </choice>
-            <flow-ref name="wmt-mfs-new-global-exception-flow" doc:name="wmt-mfs-new-global-exception-flow"/>
+{
+	codeStatus: "EL002",
+	errors: {
+		category: flowVars.metricCategory,
+		errorCode: "EL002",
+		errorMessage: getCauseMessage(flowVars.errorException),
+		flowName: flowVars.flowName,
+		httpStatus: 500
+	},
+	message: getExceptionMessage(flowVars.errorException)
+} as :object {
+	class : "com.wavemoney.model.ExperienceLayerResponseError"
+}]]></dw:set-variable>
+            </dw:transform-message>
+            <flow-ref name="wmt-mfs-global-exception-flow" doc:name="wmt-mfs-global-exception-flow"/>
+ 
 
         </catch-exception-strategy>
         
         <catch-exception-strategy when="#[exception.causedBy(com.wmt.mfs.crm.exp.exception.WaveMoneyJWTException)]" doc:name="Catch Exception Strategy - JWT Exception">
-            <expression-component doc:name="Expression"><![CDATA[flowVars.errorCode=exception.getCause().getJwtCode();
-flowVars.httpStatusCode=exception.getCause().getHttpStatusCode(); 
-flowVars.errorMessage=exception.getCause().getErrorMessage();]]></expression-component>
-            <logger message="JWT Exception: #[flowVars.errorMessage]" level="ERROR" category="com.wmt.mfs.agent.exp" doc:name="Logger"/>
-            <flow-ref name="wmt-mfs-new-global-exception-flow" doc:name="wmt-mfs-new-global-exception-flow"/>
+            <expression-component doc:name="Get Exception Value"><![CDATA[flowVars.WaveMoneyJWTException = exception.getCause(); 
+flowVars.errorCode=flowVars.WaveMoneyJWTException.getJwtCode();
+flowVars.httpStatusCode=flowVars.WaveMoneyJWTException.getHttpStatusCode(); 
+flowVars.errorMessage=flowVars.WaveMoneyJWTException.getErrorMessage();
+]]></expression-component>
+            <dw:transform-message doc:name="Transform Message" metadata:id="97c4cef9-e93e-4067-97bb-a76ed306848a">
+                <dw:set-variable variableName="ExpierenceLayerResponseError"><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	codeStatus: flowVars.errorCode,
+	errors: {
+		category: flowVars.metricCategory,
+		errorCode: flowVars.errorCode,
+		errorMessage: flowVars.errorMessage,
+		flowName: flowVars.flowName,
+		httpStatus: flowVars.httpStatusCode
+	},
+	message: flowVars.errorMessage
+} as :object {
+	class : "com.wavemoney.model.ExperienceLayerResponseError"
+}]]></dw:set-variable>
+            </dw:transform-message>
 
+            <flow-ref name="wmt-mfs-global-exception-flow" doc:name="wmt-mfs-global-exception-flow"/>
+            
         </catch-exception-strategy>
         
         <catch-exception-strategy doc:name="Catch Exception Strategy - Generic" >
-            <expression-component doc:name="Expression"><![CDATA[flowVars.errorCode="0000";
-flowVars.httpStatusCode=550;]]></expression-component>
-			<set-variable variableName="errorMessage" value="#[(exception.cause!=null)?(exception.cause.message):exception]" doc:name="Set Error Message"/>
-            <logger message="Exception Class #[(exception.cause!=null)?(exception.cause.message):exception]" level="INFO" doc:name="Logger" category="com.wmt.mfs.crm.exp"/>
+            
+            <set-variable variableName="errorException" value="#[exception]" doc:name="Get Exception"/>
+            <dw:transform-message doc:name="Transform Message" metadata:id="c4f6b23e-264b-4809-95b7-8b22ec5937a6">
+                <dw:set-variable variableName="ExpierenceLayerResponseError"><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	codeStatus: "EL001",
+	errors: {
+		category: flowVars.metricCategory,
+		errorCode: "EL001",
+		errorMessage: getCauseMessage(flowVars.errorException),
+		flowName: flowVars.flowName,
+		httpStatus: 500
+	},
+	message: getExceptionMessage(flowVars.errorException)
+} as :object {
+	class : "com.wavemoney.model.ExperienceLayerResponseError"
+}]]></dw:set-variable>
+            </dw:transform-message>            
 
-
-            <flow-ref name="wmt-mfs-new-global-exception-flow" doc:name="wmt-mfs-new-global-exception-flow"/>
+            <flow-ref name="wmt-mfs-global-exception-flow" doc:name="wmt-mfs-global-exception-flow"/>
 
         </catch-exception-strategy>
-        
     
     </choice-exception-strategy>
-    <catch-exception-strategy name="wmt-mfs-crm-global-exceptionCatch_General_Exception_Strategy">
-         <logger message="Exception Class #[(exception.cause!=null)?(exception.cause.message):exception]" level="INFO" doc:name="Logger" category="com.wmt.mfs.crm.exp"/>
-        <expression-component doc:name="Expression"><![CDATA[flowVars.errorCode="0000";
-flowVars.httpStatusCode=500;
-flowVars.errorMessage=exception.getCause().getErrorMessage();]]></expression-component>
-
-            <flow-ref name="wmt-mfs-new-global-exception-flow" doc:name="wmt-mfs-new-global-exception-flow"/>
-    </catch-exception-strategy>
-
-
-	<flow name="wmt-mfs-new-global-exception-flow">
+    
+    <flow name="wmt-mfs-global-exception-flow">
+        <enricher source="#[flowVars.nonce]" target="#[flowVars.nonce]" doc:name="Message Enricher">
+            <processor-chain doc:name="Processor Chain">
+                <message-properties-transformer doc:name="Message Properties">
+                   <add-message-property key="accept-encoding" value="application/json"/>
+                   <add-message-property key="appId" value="test"/>
+                   <add-message-property key="appVersion" value="test"/>
+                   <add-message-property key="versionCode" value="test"/>
+                   <add-message-property key="deviceId" value="test"/>
+                   <add-message-property key="userLanguage" value="en"/>
+                </message-properties-transformer>
+                <http:request config-ref="HTTP_Request_Configuration_for_PROC" path="/security-token" method="GET" doc:name="HTTP"/>
+                <dw:transform-message doc:name="Transform Message">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload]]></dw:set-payload>
+                    <dw:set-variable variableName="nonce"><![CDATA[%dw 1.0
+%output application/java
+---
+payload.responseMap.securityCounter]]></dw:set-variable>
+                </dw:transform-message>
+            </processor-chain>
+        </enricher>
         <component class="com.wmt.mfs.crm.exp.GenerateJWTHeaderAfterException" doc:name="Properties To JWT Header After Exception"/>
         <dw:transform-message doc:name="Set Error Response">
             <dw:input-variable doc:sample="sample_data\string.dwl" mimeType="application/java" variableName="errorMessage"/>
             <dw:set-payload><![CDATA[%dw 1.0
-%output application/json
+%output application/json  encoding="UTF-8"
 ---
-{
-	responseMap: {
-	},
-	codeStatus: "EL" ++ flowVars.errorCode,
-	message: flowVars.errorMessage
-}]]></dw:set-payload>
+flowVars.ExpierenceLayerResponseError]]></dw:set-payload>
         </dw:transform-message>
-        <set-property propertyName="http.status" value="#[flowVars.httpStatusCode]" doc:name="Set Http Status"/>
+        <set-property propertyName="http.status" value="#[flowVars.ExpierenceLayerResponseError.getErrors().getHttpStatus()]" doc:name="Set Http Status"/>
         <logger message="Error Response: #[message.payloadAs(java.lang.String)]" level="INFO" category="com.wmt.mfs.crm.exp" doc:name="Logger"/>
     </flow>
     

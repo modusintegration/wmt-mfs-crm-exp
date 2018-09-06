@@ -1,18 +1,16 @@
 package com.wmt.mfs.crm.exp;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.security.cert.Certificate;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,14 +34,10 @@ import com.wmt.mfs.crm.exp.exception.WaveMoneyJWTException;
 
 public class JwtUtil {
 
-//	private static String publicKey = "src/main/resources/mfsKeystore.jks";
-//	 private static String publicKey =
-//	 "/opt/mule-enterprise-standalone-3.9.0/apps/wmt-mfs-crm-exp/classes/mfsKeystore.jks";
-	 private static String publicKey = "mfsKeystore.jks";
+//	private static String publicKey = "C:\\Users\\Admin\\git\\wmt-mfs-crm-exp-all-branches\\src\\main\\resources\\mfsKeystore.jks";
+//	 private static String publicKey = "/opt/mule-enterprise-standalone-3.9.0/apps/wmt-mfs-agent-exp/classes/mfsKeystore.jks";
+	private static String publicKey = "mfsKeystore.jks";
 	private static Logger logger = LogManager.getLogger(JwtUtil.class.getName());
-	
-	public static final String CRM_PROPERTIES = "wmt-mfs-crm-exp.properties";
-	public static final String CRM_SEC_PROPERTIES = "wmt-mfs-crm-exp-sec.properties";
 
 	/**
 	 * @param args
@@ -101,8 +95,8 @@ public class JwtUtil {
 		 
 		logger.info("*** Creating JWE ***");
 		
-		logger.debug("Mule Payload Class: " + eventContext.getMessage().getPayload().getClass().getName());
-		logger.debug("Mule Payload Value: " + eventContext.getMessage().getPayload());
+		/*logger.debug("Mule Payload Class: " + eventContext.getMessage().getPayload().getClass().getName());
+		logger.debug("Mule Payload Value: " + eventContext.getMessage().getPayload());*/
 		 
 		try {
 
@@ -119,9 +113,8 @@ public class JwtUtil {
 			String encAlg = ContentEncryptionAlgorithmIdentifiers.AES_128_CBC_HMAC_SHA_256;
 			jwe.setEncryptionMethodHeaderParameter(encAlg);
 
-			Util u = new Util();
 			// We encrypt to the receiver using their public key
-			jwe.setKey((RSAPublicKey) getPublicKey(publicKey, u.getProperty("jks.public.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.public.jwt.encrypt.alias", CRM_PROPERTIES)));
+			jwe.setKey((RSAPublicKey) getPublicKey(publicKey, "password", "selfsigned"));
 			jwe.setKeyIdHeaderValue("mfs");
 
 			// A nested JWT requires that the cty (Content Type) header be set
@@ -162,19 +155,18 @@ public class JwtUtil {
 		
 		logger.info("*** Creating JWT ****"); 
 		
-		logger.debug("Mule Payload Class: " + eventContext.getMessage().getPayload().getClass().getName());
+		/*logger.debug("Mule Payload Class: " + eventContext.getMessage().getPayload().getClass().getName());
 		logger.debug("Mule Payload Value: " + eventContext.getMessage().getPayload());
-		
+		*/
 
 		// Create the Claims, which will be the content of the JWT
 		claims.setIssuer("WM"); // who creates the token and signs it
 		claims.setAudience("WMT-MFS"); // to whom the token is intended to be
 										// sent
-		//CRM will not have an expiration time for the JWT
-		//claims.setExpirationTimeMinutesInTheFuture(10); // time when the token
+		claims.setExpirationTimeMinutesInTheFuture(10); // time when the token
 														// will expire (10
 														// minutes from now)
-		claims.setGeneratedJwtId(); // a unique identifier for the token
+//		claims.setGeneratedJwtId(); // a unique identifier for the token
 		claims.setIssuedAtToNow(); // when the token was issued/created (now)
 		claims.setNotBeforeMinutesInThePast(2); // time before which the token
 												// is not yet valid (2 minutes
@@ -182,23 +174,24 @@ public class JwtUtil {
 		claims.setSubject("WMT-MFS"); // the subject/principal is whom the token
 										// is about
 
-		//CRM will not have a NONCE set to its JWTID
-		//String uuidJti = UUID.randomUUID().toString();
-		//logger.info("uuidJti: " + uuidJti);
-		//claims.setJwtId(uuidJti);
+//		String uuidJti = UUID.randomUUID().toString();
+//
+//		logger.info("uuidJti: " + uuidJti);
+//
+//		claims.setJwtId(uuidJti);
 
-//		try {
-//			logger.info("expirationTime: " + claims.getExpirationTime());
-//			logger.info("expirationTime toString(): " + claims.getExpirationTime().toString());
-//			logger.info("expirationTime getValueInMillis(): " + claims.getExpirationTime().getValueInMillis());
-//			logger.info("expirationTime getValue(): " + claims.getExpirationTime().getValue());
-//
+		try {
+			logger.info("expirationTime: " + claims.getExpirationTime());
+			logger.info("expirationTime toString(): " + claims.getExpirationTime().toString());
+			logger.info("expirationTime getValueInMillis(): " + claims.getExpirationTime().getValueInMillis());
+			logger.info("expirationTime getValue(): " + claims.getExpirationTime().getValue());
+
 //			DbUtil.insertNonce(uuidJti, claims.getExpirationTime().getValue());
-//
-//		} catch (MalformedClaimException e1) {
-//			logger.error("Claim Exception: " + e1.getMessage(), e1);
-//			throw new WaveMoneyJWTException(500, "JW03", e1.getMessage(), e1);
-//		}
+
+		} catch (MalformedClaimException e1) {
+			logger.error("Claim Exception: " + e1.getMessage(), e1);
+			throw new WaveMoneyJWTException(500, "JW03", e1.getMessage(), e1);
+		}
 
 		// A JWT is a JWS and/or a JWE with JSON claims as the payload.
 		// In this case it is a JWS so we create a JsonWebSignature object.
@@ -223,10 +216,8 @@ public class JwtUtil {
 
 		logger.info("Clame has been converted to JSON");
 
-		Util u = new Util();
-		
 		// The JWT is signed using the private key
-		jws.setKey((RSAPrivateKey) getPrivateKey(publicKey, u.getProperty("jks.private.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.private.jwt.encrypt.alias", CRM_PROPERTIES)));
+		jws.setKey((RSAPrivateKey) getPrivateKey(publicKey, "password", "selfsigned"));
 
 		// Set the Key ID (kid) header.
 		// We only have one key.
@@ -279,9 +270,6 @@ public class JwtUtil {
 
 			AlgorithmConstraints jweEncConstraints = new AlgorithmConstraints(ConstraintType.WHITELIST,
 					ContentEncryptionAlgorithmIdentifiers.AES_128_CBC_HMAC_SHA_256);
-			
-			Util u = new Util();
-			
 			// Use JwtConsumerBuilder to construct an appropriate JwtConsumer,
 			// which will
 			// be used to validate and process the JWT.
@@ -291,30 +279,29 @@ public class JwtUtil {
 			// a trusted issuer, and
 			// and audience that identifies your system as the intended
 			// recipient.
-			//CRM will not verify the JWT has expiration time set
-			//.setRequireExpirationTime() // the
-			// JWT
-			// must
-			// have
-			// an
-			// expiration
-			// time
-			JwtConsumer jwtConsumer = new JwtConsumerBuilder().setAllowedClockSkewInSeconds(30) // allow some leeway in
-														                                        // validating time based
-														                                        // claims to account for
-														                                        // clock skew
+			JwtConsumer jwtConsumer = new JwtConsumerBuilder().setRequireExpirationTime() // the
+																							// JWT
+																							// must
+																							// have
+																							// an
+																							// expiration
+																							// time
+					.setAllowedClockSkewInSeconds(30) // allow some leeway in
+														// validating time based
+														// claims to account for
+														// clock skew
 					.setRequireSubject() // the JWT must have a subject claim
 					.setExpectedIssuer("WM") // whom the JWT needs to have been
 												// issued by
 					.setExpectedAudience("WMT-MFS") // to whom the JWT is
 													// intended for
-					.setDecryptionKey((RSAPrivateKey) getPrivateKey(publicKey, u.getProperty("jks.private.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.private.jwt.encrypt.alias", CRM_PROPERTIES))) // decrypt
+					.setDecryptionKey((RSAPrivateKey) getPrivateKey(publicKey, "password", "selfsigned")) // decrypt
 																											// with
 																											// the
 																											// receiver's
 																											// private
 																											// key
-					.setVerificationKey((RSAPublicKey) getPublicKey(publicKey, u.getProperty("jks.public.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.public.jwt.encrypt.alias", CRM_PROPERTIES))) // verify
+					.setVerificationKey((RSAPublicKey) getPublicKey(publicKey, "password", "selfsigned")) // verify
 																											// the
 																											// signature
 																											// with
@@ -421,8 +408,6 @@ public class JwtUtil {
 			AlgorithmConstraints jweEncConstraints = new AlgorithmConstraints(ConstraintType.WHITELIST,
 					ContentEncryptionAlgorithmIdentifiers.AES_128_CBC_HMAC_SHA_256);
 			
-			Util u = new Util();
-			
 			// Use JwtConsumerBuilder to construct an appropriate JwtConsumer,
 			// which will
 			// be used to validate and process the JWT.
@@ -432,30 +417,29 @@ public class JwtUtil {
 			// a trusted issuer, and
 			// and audience that identifies your system as the intended
 			// recipient.
-			//CRM will not verify if JWT has expiration time configured
-			//.setRequireExpirationTime() // the
-			// JWT
-			// must
-			// have
-			// an
-			// expiration
-			// time
-			JwtConsumer jwtConsumer = new JwtConsumerBuilder().setAllowedClockSkewInSeconds(30) // allow some leeway in
-														                                        // validating time based
-														                                        // claims to account for
-														                                        // clock skew
+			JwtConsumer jwtConsumer = new JwtConsumerBuilder().setRequireExpirationTime() // the
+																							// JWT
+																							// must
+																							// have
+																							// an
+																							// expiration
+																							// time
+					.setAllowedClockSkewInSeconds(30) // allow some leeway in
+														// validating time based
+														// claims to account for
+														// clock skew
 					.setRequireSubject() // the JWT must have a subject claim
 					.setExpectedIssuer("WM") // whom the JWT needs to have been
 												// issued by
 					.setExpectedAudience("WMT-MFS") // to whom the JWT is
 													// intended for
-					.setDecryptionKey((RSAPrivateKey) getPrivateKey(publicKey, u.getProperty("jks.private.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.private.jwt.encrypt.alias", CRM_PROPERTIES))) // decrypt
+					.setDecryptionKey((RSAPrivateKey) getPrivateKey(publicKey, "password", "selfsigned")) // decrypt
 																											// with
 																											// the
 																											// receiver's
 																											// private
 																											// key
-					.setVerificationKey((RSAPublicKey) getPublicKey(publicKey, u.getProperty("jks.public.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.public.jwt.encrypt.alias", CRM_PROPERTIES))) // verify
+					.setVerificationKey((RSAPublicKey) getPublicKey(publicKey, "password", "selfsigned")) // verify
 																											// the
 																											// signature
 																											// with
@@ -485,31 +469,33 @@ public class JwtUtil {
 			
 			logger.info("Jwe processed");
 
-			try {
-				
-				if (true) {
-					
-					//logger.info("Jwe: Nonce has been deleted");
-					
-					logger.debug("JWE-JWS-JWT validation succeeded! " + jwtClaims);
-					
-					return jwtClaims;
-					
-				} else {
-					
-					logger.error("JWE Invalid Nonce");
-					
-					throw new WaveMoneyJWTException(500, "JW14", "JWE Invalid Nonce");
-					 
-				}
-				
-			} catch (Exception e1) {
-				
-				logger.error("JWE Malformed Claim Exception JWT!" + e1.getMessage(), e1);
-				
-				throw new WaveMoneyJWTException(500, "JW15", e1.getMessage(), e1);
-				
-			}
+			return jwtClaims;
+			
+//			try {
+//				
+//				if (DbUtil.deleteNonce(jwtClaims.getJwtId()) == 1) {
+//					
+//					logger.info("Jwe: Nonce has been deleted");
+//					
+//					logger.debug("JWE-JWS-JWT validation succeeded! " + jwtClaims);
+//					
+//					return jwtClaims;
+//					
+//				} else {
+//					
+//					logger.error("JWE Invalid Nonce");
+//					
+//					throw new WaveMoneyJWTException(500, "JW14", "JWE Invalid Nonce");
+//					 
+//				}
+//				
+//			} catch (MalformedClaimException e1) {
+//				
+//				logger.error("JWE Malformed Claim Exception JWT!" + e1.getMessage(), e1);
+//				
+//				throw new WaveMoneyJWTException(500, "JW15", e1.getMessage(), e1);
+//				
+//			}
 
 		} catch (InvalidJwtException e) {
 			
@@ -574,8 +560,6 @@ public class JwtUtil {
 		
 		logger.info("*** Validating JWT And Return Claims ***");
 		
-		Util u = new Util();
-		
 		try {
 			// Use JwtConsumerBuilder to construct an appropriate JwtConsumer,
 			// which will
@@ -586,15 +570,14 @@ public class JwtUtil {
 			// a trusted issuer, and
 			// and audience that identifies your system as the intended
 			// recipient.
-			// CRM will not validate if expiration time has been set 
-			//.setRequireExpirationTime() // the
-			// JWT
-			// must
-			// have
-			// an
-			// expiration
-			// time
-			JwtConsumer jwtConsumer = new JwtConsumerBuilder().setAllowedClockSkewInSeconds(30) // allow some leeway in
+			JwtConsumer jwtConsumer = new JwtConsumerBuilder().setRequireExpirationTime() // the
+																							// JWT
+																							// must
+																							// have
+																							// an
+																							// expiration
+																							// time
+					.setAllowedClockSkewInSeconds(30) // allow some leeway in
 														// validating time based
 														// claims to account for
 														// clock skew
@@ -603,7 +586,7 @@ public class JwtUtil {
 												// issued by
 					.setExpectedAudience("WMT-MFS") // to whom the JWT is
 													// intended for
-					.setVerificationKey((RSAPublicKey) getPublicKey(publicKey, u.getProperty("jks.public.jwt.encrypt.password", CRM_SEC_PROPERTIES), u.getProperty("jks.public.jwt.encrypt.alias", CRM_PROPERTIES))) // verify
+					.setVerificationKey((RSAPublicKey) getPublicKey(publicKey, "password", "selfsigned")) // verify
 																											// the
 																											// signature
 																											// with
@@ -705,7 +688,8 @@ public class JwtUtil {
 			
 			KeyStore keystore = KeyStore.getInstance("JKS");
 
-			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
+			InputStream is = ClassLoader.getSystemResourceAsStream(filename);
+		//	InputStream is = new FileInputStream(filename);
 
 			keystore.load(is, password.toCharArray());
 			
@@ -754,7 +738,8 @@ public class JwtUtil {
 			
 			KeyStore keystore = KeyStore.getInstance("JKS");
 
-			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
+			InputStream is = ClassLoader.getSystemResourceAsStream(filename);
+			//InputStream is = new FileInputStream(filename);
 
 			keystore.load(is, password.toCharArray());
 			
@@ -816,7 +801,7 @@ public class JwtUtil {
 			
 			KeyStore keystore = KeyStore.getInstance("JKS");
 
-			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
+			InputStream is = ClassLoader.getSystemResourceAsStream(filename);
 
 			keystore.load(is, password.toCharArray());
 			
