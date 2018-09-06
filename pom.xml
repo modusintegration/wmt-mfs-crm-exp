@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.wm.mfs.exp</groupId>
 	<artifactId>wmt-mfs-crm-exp</artifactId>
-    <version>1.0.0</version>
-    <packaging>mule</packaging>
+    	<version>1.0.1</version>
+    	<packaging>mule</packaging>
 	<name>Mule wmt-mfs-crm-exp Application</name>
 
     <properties>
